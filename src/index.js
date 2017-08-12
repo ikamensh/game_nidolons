@@ -1,84 +1,78 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
 import './index.css';
-import './grid.js'
+import {HT} from './grid.js'
+import {Hero} from './Character.js'
+import {Game} from './Game.js'
+import {SoundEngine} from './SoundEngine.js'
+
+var img = document.getElementById('theHeroImg');
+var img1 = document.getElementById('enemy1');
+
+var soundClash = document.getElementById("clash");
+var soundStep = document.getElementById("step");
+
+var dx = 110.8512517;
+var dy = 128;
 
 
-class Square extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      value: null,
-    };
-  }
-	
-  render() {
-    return (
-      <button className="square" onClick={() => this.props.onClick()}>
-        {this.props.value}
-      </button> 
-    );
-  }
+
+var canvas = document.getElementById('unitsLayer');
+var ctx = canvas.getContext('2d');
+
+var canvasGrid = document.getElementById('grid');
+var ctxGrid = canvasGrid.getContext('2d');
+
+var debugInfo = document.getElementById('debugInfo');
+
+var gridMaybe = new HT.Grid(960, 600);
+
+var soundsAssets = {};
+soundsAssets['clash']=soundClash;
+soundsAssets['step']=soundStep;
+var soundEngine = new SoundEngine( soundsAssets );
+
+var game = new Game(gridMaybe, soundEngine);
+
+
+var theHero = new Hero(img);
+gridMaybe.placeUnit(gridMaybe.GetHexById("(2,4)"), theHero);
+game.setHero(theHero);
+
+var enemy1 = new Hero(img1);
+game.addHostile(enemy1);
+gridMaybe.placeUnit(gridMaybe.GetHexById("(5,5)"), enemy1);
+
+enemy1 = new Hero(img1);
+game.addHostile(enemy1);
+gridMaybe.placeUnit(gridMaybe.GetHexById("(5,3)"), enemy1);
+
+function init() {
+  window.requestAnimationFrame(draw);
+  game.refreshMovable(theHero);
 }
 
-class Character extends React.Component {
-	  render() {
-		return (		
-		<div id="theHero"/>  
-		);
+function draw() {  
+
+	ctx.globalCompositeOperation = 'destination-over';
+	ctx.clearRect(0, 0, 960, 600);
+	ctxGrid.globalCompositeOperation = 'destination-over';
+	ctxGrid.clearRect(0, 0, 960, 600);
+  
+  
+  for(let hex of gridMaybe.Hexes)
+  {
+	  if(hex.content)
+	  {
+		hex.draw(ctx);
+	  } else {
+		hex.draw(ctxGrid);
 	  }
   }
 
-class Board extends React.Component {
-		constructor() {
-		super();
-		this.state = {
-			hero_x: 0,
-			hero_y: 0,
-		  squares: Array(9).fill(null),
-		};
-	}
-	
-  renderSquare(i) {
-    return (<Square 
-		value={this.state.squares[i]} 
-		onClick={() => this.handleClick(i)}
-	/>);
-  }
-  
-   handleClick(i) {
-    const squares = this.state.squares.slice();
-    squares[i] = 'X';
-    this.setState({squares: squares});
-  }
-
-  render() {
-    const status = 'Next player: X';
-    return (
-      <div id="hexCanvas">
-        	<Character/>
-      </div>
-    );
-  }
+  window.requestAnimationFrame(draw);
+  debugInfo.innerHTML= theHero.x+" "+theHero.y
 }
 
-class Game extends React.Component {
-  render() {
-    return (
-	<div>
-      <div className="game">
-        <div className="game-board">
-          <Board />
-        </div>
-        <div className="game-info">
-          <div>{/* status */}</div>
-          <ol>{/* TODO */}</ol>
-        </div>		
-      </div>	  
-	</div>
-    );
-  }
-}
+init();
 
 function myFunction(){
 	alert("wow");
@@ -88,77 +82,71 @@ function myHeroWasClicked(){
 	alert("got_clicked!");
 }
 
-var y=0;
-var x=0;
-var dx = 110.8512517
-var dy = 128
+
 document.onkeydown = function(evt) {
     evt = evt || window.event;
     
+	let hex = null;
 	//q
 	if (evt.keyCode == 81) {
-		
-		x+=dx;
-		y-=dy/2;
-		document.getElementById("theHero").style.right = x+"px";
-        document.getElementById("theHero").style.top = y+"px";
-		
+		hex = gridMaybe.moveUnitNW(theHero);		
     }
 	
 	//w
 	if (evt.keyCode == 87) {
-		
-
-		y-=dy; //fds
-
-        document.getElementById("theHero").style.top = y+"px";
-		
+		hex = gridMaybe.moveUnitN(theHero);
     }
 	
 	//e
 	if (evt.keyCode == 69) {
-		
-		x-=dx;
-		y-=dy/2;
-		document.getElementById("theHero").style.right = x+"px";
-        document.getElementById("theHero").style.top = y+"px";
-		
+		hex = gridMaybe.moveUnitNE(theHero);	
     }
 	
 	//a
 	if (evt.keyCode == 65) {
-		
-		x+=dx;
-		y+=dy/2;
-		document.getElementById("theHero").style.right = x+"px";
-        document.getElementById("theHero").style.top = y+"px";
+		hex = gridMaybe.moveUnitSW(theHero);
     }
 	
 	//s
 	if (evt.keyCode == 83) {
-		
-
-		y+=dy;
-
-        document.getElementById("theHero").style.top = y+"px";
+		hex = gridMaybe.moveUnitS(theHero);
     }
 	
 	//d
 	if (evt.keyCode == 68) {
-		
-		x-=dx
-		y+=dy/2;
-		document.getElementById("theHero").style.right = x+"px";
-        document.getElementById("theHero").style.top = y+"px";
+		hex = gridMaybe.moveUnitSE(theHero);
     }
+	if(gridMaybe.goTo(hex, theHero)){
+		game.executeHostilesTurn();
+	}
 	
-	
-	
+	game.refreshMovable(theHero);
 };
 
-// ========================================
 
-ReactDOM.render(
-  <Game />,
-  document.getElementById('root')
-);
+function getMousePos(canvas, evt) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+      x: evt.clientX - rect.left,
+      y: evt.clientY - rect.top
+    };
+  }
+  
+  canvasGrid.addEventListener('mousemove', function(evt) {
+    var mousePos = getMousePos(canvasGrid, evt);
+	gridMaybe.selectHex(mousePos.x+15, mousePos.y+15);
+    console.log('Mouse position: ' + mousePos.x + ',' + mousePos.y);
+  }, false);
+  
+  canvasGrid.addEventListener('click', function(evt) {
+    var mousePos = getMousePos(canvasGrid, evt);
+	gridMaybe.selectHex(mousePos.x+15, mousePos.y+15);
+	if(game.issueOrderGo(gridMaybe.selectedHex)){
+		game.executeHostilesTurn();
+	}
+	
+	game.refreshMovable(theHero);
+
+  }, false);
+
+// ======================================
