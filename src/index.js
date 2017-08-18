@@ -63,6 +63,8 @@ function draw() {
 	  if(hex.content)
 	  {
 		hex.draw(ctx);
+		ctxGrid.drawImage(canvas,0,0);
+		ctx.clearRect(0, 0, 960, 600);
 	  } else {
 		hex.draw(ctxGrid);
 	  }
