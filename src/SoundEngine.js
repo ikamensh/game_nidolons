@@ -1,25 +1,20 @@
-class SoundEngine { 
+class SoundsEngine { 
 	
-	constructor( soundsDict ) {
-		
-		this.soundsDict = soundsDict;
+	constructor() {
 	
 	  }
 
-	playSound(/* String */id){
-		let sound = this.soundsDict[id];
+	playSound(/* Sound */ sound, /*float [0-1]*/volume){
+
 		if(sound)
-		{
-			
+		{			
+			sound.volume=volume;
 			sound.play();
 			sound.currentTime=0;
-		}
-			
-		
+		}		
 	}
-	  
-	
 }
 
+var soundsEngine = new SoundsEngine();
 
-module.exports.SoundEngine = SoundEngine;
+module.exports.soundsEngine = soundsEngine;

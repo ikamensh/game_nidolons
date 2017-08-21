@@ -1,20 +1,25 @@
+import {DisplacementAnimation, DynamicValue} from './Character.js'
+import {DisappearingText} from './DisappearingText.js'
+
+
 class Game { 
 	
-	constructor( grid , soundEngine ) {		
+	constructor( grid ) {		
 		this.hostileUnits=[];
+		this.effects=[];
+		
 		if(grid)
 		{
 			this.grid = grid;
 			this.grid.game = this;
 		}
 		
-		if(soundEngine)
-		{
-			this.soundEngine = soundEngine;
-			this.soundEngine.game = this;
-		}
-	
+		this.animationPause=0;
+		this.heroActive=true;
+
 	  }  
+	  
+	  
 	  
 	  setHero(/*Unit*/ hero){
 		  this.hero=hero;
@@ -24,13 +29,45 @@ class Game {
 		  this.hostileUnits.push(unit);
 	  }
 	  
-	executeHostilesTurn(){
+	  addDT(/*Disappearing Text*/ txt){
+		  this.effects.push(txt);
+	  }
+	  
+	animateEffects(ctx){
+		  
+		for( let eff of this.effects){
+			  
+			  if(eff.draw(ctx))
+			  {
+				  let index = this.effects.indexOf(eff);
+				  this.effects.splice(index, 1);
+			  }			  
+		}	  
+	}
+	  
+	scheduleHostilesTurn(){
 		  
 		for( let unit of this.hostileUnits){
 			  
-			  this.pursueAndFight(unit);
+			  unit.madeHisTurn=false;
 			  
 		}		  
+		  
+	}
+	
+	//return: boolean: all done?
+	executeHostilesTurn(){
+		  
+		for( let unit of this.hostileUnits){
+			  if(!unit.madeHisTurn)
+			  {
+				  this.pursueAndFight(unit);
+				  unit.madeHisTurn=true;
+				  return false;
+			  }
+			  
+		}
+		return true;		
 		  
 	}
 	
@@ -88,20 +125,24 @@ class Game {
 				  
 			  }		
 	}
-	
-	  
-	  playSound(/* String */id){
-		
-		this.soundEngine.playSound(id);
-			
-		
-	}
+		 
 	
 	processAttack(/*Unit */ attacker, /*Unit */ recipient){
 		
-		recipient.recieveDamage(attacker.meleeDamage);
+		let dmg = recipient.recieveDamage(attacker.meleeDamage);
+		
+		let color = {R:255, G:120, B:120};
+		let anim = new DisplacementAnimation( {x: recipient.hex.x-attacker.hex.x, y: recipient.hex.y-attacker.hex.y}, 105, true);
+		this.addDT(
+			new DisappearingText(dmg,
+									recipient.hex.MidPoint.x+32, 
+									recipient.hex.MidPoint.y-32, 
+									60, new DynamicValue(45), 
+									12, anim, color));
+		
 		if(recipient.HP.value<=0)
 		{
+			recipient.playSound('death', (0.5+0.5*dmg/recipient.HP.maxValue));
 			recipient.hex.content=null;
 			recipient.hex=null;
 
@@ -113,10 +154,10 @@ class Game {
 				if (index > -1) {
 					this.hostileUnits.splice(index, 1);
 				}
-			}
-			
-		}
-		
+			}			
+		}	else {
+			recipient.playSound('pain', (0.1+0.9*dmg/recipient.HP.maxValue));
+		}	
 	}
 	
 	refreshMovable(){
@@ -130,9 +171,23 @@ class Game {
 		return false;
 	}
 	
-
-	
+	timestep(ctx){
+		
+		this.animateEffects(ctx);
+		if(this.animationPause>0){
+			this.animationPause--;
+			return;
+		}
+		
+		if(!this.heroActive){
+			if(this.executeHostilesTurn()){
+				this.heroActive=true;
+				this.refreshMovable(this.hero);
+			}
+		}		
+				
+	}	
 }
 
 
-module.exports.Game = Game;
+export {Game};

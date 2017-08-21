@@ -1,3 +1,6 @@
+import {DisplacementAnimation, DynamicValue} from './Character.js'
+import {DisappearingText} from './DisappearingText.js'
+
 
 var HT = HT || {};
 /**
@@ -7,12 +10,12 @@ var HT = HT || {};
 HT.Grid = function(/*double*/ width, /*double*/ height) {
 	
 	this.Hexes = [];
-	//setup a dictionary for use later for assigning the X or Y CoOrd (depending on Orientation)
-	var HexagonsByXOrYCoOrd = {}; //Dictionary<int, List<Hexagon>>
+	//setup a dictionary for use later for assigning the x or y CoOrd (depending on Orientation)
+	var HexagonsByxOryCoOrd = {}; //Dictionary<int, List<Hexagon>>
 	var selectedHex = null;
 	var row = 0;
-	var y = 0.0;
-	while (y + HT.Hexagon.Static.HEIGHT <= height)
+	var y = 20.0;
+	while (y + HT.Hexagon.Static.HEIGHT <= height-20)
 	{
 		var col = 0;
 
@@ -23,20 +26,20 @@ HT.Grid = function(/*double*/ width, /*double*/ height) {
 			col = 1;
 		}
 		
-		var x = offset;
-		while (x + HT.Hexagon.Static.WIDTH <= width)
+		var x = offset+50;
+		while (x + HT.Hexagon.Static.WIDTH <= width-20)
 		{
 		    var hexId = this.GetHexId(row, col);
 			var h = new HT.Hexagon(hexId, x, y, row, col);
 			
 			var pathCoOrd = col;
-			h.PathCoOrdX = col;//the column is the x coordinate of the hex, for the y coordinate we need to get more fancy
+			h.PathCoOrdx = col;//the column is the x coordinate of the hex, for the y coordinate we need to get more fancy
 			
 			this.Hexes.push(h);
 			
-			if (!HexagonsByXOrYCoOrd[pathCoOrd])
-				HexagonsByXOrYCoOrd[pathCoOrd] = [];
-			HexagonsByXOrYCoOrd[pathCoOrd].push(h);
+			if (!HexagonsByxOryCoOrd[pathCoOrd])
+				HexagonsByxOryCoOrd[pathCoOrd] = [];
+			HexagonsByxOryCoOrd[pathCoOrd].push(h);
 
 			col+=2;
 			x += HT.Hexagon.Static.WIDTH + HT.Hexagon.Static.SIDE;
@@ -47,19 +50,19 @@ HT.Grid = function(/*double*/ width, /*double*/ height) {
 	}
 
 	//finally go through our list of hexagons by their x co-ordinate to assign the y co-ordinate
-	for (var coOrd1 in HexagonsByXOrYCoOrd)
+	for (var coOrd1 in HexagonsByxOryCoOrd)
 	{
-		var hexagonsByXOrY = HexagonsByXOrYCoOrd[coOrd1];
+		var hexagonsByxOry = HexagonsByxOryCoOrd[coOrd1];
 		var coOrd2 = Math.floor(coOrd1 / 2) + (coOrd1 % 2);
-		for (var i in hexagonsByXOrY)
+		for (var i in hexagonsByxOry)
 		{
-			var h = hexagonsByXOrY[i];//Hexagon			
-			h.PathCoOrdY = coOrd2++;
+			var h = hexagonsByxOry[i];//Hexagon			
+			h.PathCoOrdy = coOrd2++;
 		}
 	}
 };
 
-HT.Grid.Static = {Letters:'ABCDEFGHIJKLMNOPQRSTUVWXYZ'};
+HT.Grid.Static = {Letters:'ABCDEFGHIJKLMNOPQRSTUVWxyZ'};
 
 HT.Grid.prototype.GetHexId = function(row, col) {
 	
@@ -86,8 +89,8 @@ HT.Grid.prototype.GetHexAt = function(x, y) {
 
 HT.Grid.prototype.markGivenMovable = function(/*Array<Hexagon> */ movable){
 	for(let hex of this.Hexes){
-			console.log("index of hex "+hex.Id+" = " +movable.indexOf(hex));
-			if(movable.indexOf(hex)!=-1)
+			
+			if(movable && movable.indexOf(hex)!=-1)
 			{	
 				hex.movable=true;				
 			} else {
@@ -115,13 +118,18 @@ HT.Grid.prototype.goTo = function(/*Hexagon*/ hex, /*Character*/ unit) {
 	{
 		if(hex.content)
 		{
-			this.game.playSound('clash');
-			this.game.processAttack(unit,hex.content);
+			unit.playSound('attack', Math.min(1, unit.meleeDamage.amount/hex.content.HP.value));
+			this.game.processAttack(unit,hex.content);			
+			unit.animation = new DisplacementAnimation( new HT.Point( (hex.x-unit.hex.x)/4, (hex.y-unit.hex.y)/4), 12, false);
+			this.game.animationPause=15;
 			
 		} else {
+			
+			this.game.animationPause=15;
 			unit.hex.content=null;
 			this.placeUnit(hex, unit);
-			this.game.playSound('step');
+			unit.animation = new DisplacementAnimation( new HT.Point( -(hex.x-unit.hex.x), -(hex.y-unit.hex.y)), 15, false);
+			unit.playSound('step',1.);
 		}
 		return true;
 	}
@@ -205,9 +213,9 @@ HT.Grid.prototype.moveUnitSW = function(/*Character*/ unit) {
 HT.Grid.prototype.GetHexDistance = function(/*Hexagon*/ h1, /*Hexagon*/ h2) {
 	//a good explanation of this calc can be found here:
 	//http://playtechs.blogspot.com/2007/04/hex-grids.html
-	var deltaX = h1.PathCoOrdX - h2.PathCoOrdX;
-	var deltaY = h1.PathCoOrdY - h2.PathCoOrdY;
-	return ((Math.abs(deltaX) + Math.abs(deltaY) + Math.abs(deltaX - deltaY)) / 2);
+	var deltax = h1.PathCoOrdx - h2.PathCoOrdx;
+	var deltay = h1.PathCoOrdy - h2.PathCoOrdy;
+	return ((Math.abs(deltax) + Math.abs(deltay) + Math.abs(deltax - deltay)) / 2);
 };
 
 /**
@@ -227,8 +235,8 @@ HT.Grid.prototype.GetHexById = function(id) {
 };
 
 HT.Point = function(x, y) {
-	this.X = x;
-	this.Y = y;
+	this.x = x;
+	this.y = y;
 };
 
 /**
@@ -236,8 +244,8 @@ HT.Point = function(x, y) {
  * @constructor
  */
 HT.Rectangle = function(x, y, width, height) {
-	this.X = x;
-	this.Y = y;
+	this.x = x;
+	this.y = y;
 	this.Width = width;
 	this.Height = height;
 };
@@ -246,11 +254,31 @@ HT.Rectangle = function(x, y, width, height) {
  * A Line is x and y start and x and y end
  * @constructor
  */
-HT.Line = function(x1, y1, x2, y2) {
-	this.X1 = x1;
-	this.Y1 = y1;
-	this.X2 = x2;
-	this.Y2 = y2;
+HT.Line = function(p1, p2) {
+	this.p1 = p1;
+	this.p2 = p2;
+};
+
+HT.Line.prototype.drawBar = function(ctx, color1, color2, thickness, percentage) {
+	
+	let pointMid = new HT.Point(this.p1.x + percentage * (this.p2.x-this.p1.x),
+								this.p1.y + percentage * (this.p2.y-this.p1.y));
+	
+	HT.Line.STATIC.draw(ctx, this.p1, pointMid, color1, thickness);
+	
+	HT.Line.STATIC.draw(ctx, pointMid, this.p2, color2, thickness);
+	
+};
+HT.Line.STATIC = {};
+HT.Line.STATIC.draw = function(ctx, p1, p2, color, thickness) {
+	
+	ctx.strokeStyle = color;
+	ctx.lineWidth = thickness;	
+	ctx.beginPath();
+	ctx.moveTo(p1.x, p1.y);		
+	ctx.lineTo(p2.x, p2.y);	
+	ctx.stroke();	
+	
 };
 
 /**
@@ -258,22 +286,22 @@ HT.Line = function(x1, y1, x2, y2) {
  * @constructor
  */
 HT.Hexagon = function(id, x, y, row, col) {
-	this.Points = [];//Polygon Base
+	this.points = [];//Polygon Base
 	var x1 = null;
 	var y1 = null;
 	this.row = row;
 	this.col = col;
-	this.movable=false;
+	
 	
 
 	x1 = (HT.Hexagon.Static.WIDTH - HT.Hexagon.Static.SIDE)/2;
 	y1 = (HT.Hexagon.Static.HEIGHT / 2);
-	this.Points.push(new HT.Point(x1 + x, y));
-	this.Points.push(new HT.Point(x1 + HT.Hexagon.Static.SIDE + x, y));
-	this.Points.push(new HT.Point(HT.Hexagon.Static.WIDTH + x, y1 + y));
-	this.Points.push(new HT.Point(x1 + HT.Hexagon.Static.SIDE + x, HT.Hexagon.Static.HEIGHT + y));
-	this.Points.push(new HT.Point(x1 + x, HT.Hexagon.Static.HEIGHT + y));
-	this.Points.push(new HT.Point(x, y1 + y));
+	this.points.push(new HT.Point(x1 + x, y));
+	this.points.push(new HT.Point(x1 + HT.Hexagon.Static.SIDE + x, y));
+	this.points.push(new HT.Point(HT.Hexagon.Static.WIDTH + x, y1 + y));
+	this.points.push(new HT.Point(x1 + HT.Hexagon.Static.SIDE + x, HT.Hexagon.Static.HEIGHT + y));
+	this.points.push(new HT.Point(x1 + x, HT.Hexagon.Static.HEIGHT + y));
+	this.points.push(new HT.Point(x, y1 + y));
 	
 	
 	this.Id = id;
@@ -291,7 +319,25 @@ HT.Hexagon = function(id, x, y, row, col) {
 	
 	this.selected = false;
 	this.content = null;
+	this.movable=false;
 };
+	
+HT.Hexagon.prototype.drawBlank = function(ctx, stroke, thickness, fill) {
+		//black line for hexes
+	ctx.lineWidth = thickness;
+	ctx.fillStyle=fill;
+	ctx.strokeStyle = stroke;
+	ctx.beginPath();
+	ctx.moveTo(this.points[0].x, this.points[0].y);	
+	for(let p of this.points)
+	{		
+		ctx.lineTo(p.x, p.y);
+	}
+	ctx.closePath();
+	ctx.fill();
+	ctx.stroke();
+	
+}	
 	
 /**
  * draws this Hexagon to the canvas
@@ -300,54 +346,52 @@ HT.Hexagon = function(id, x, y, row, col) {
 HT.Hexagon.prototype.draw = function(ctx) {
 
 	ctx.save();
-	ctx.fillStyle='rgba(255, 255, 255, 0)';
-	if(this.content)
-	{ctx.fillStyle='rgba(255, 255, 255, 1)';}
-	else if (this.selected && this.movable)
-	{ctx.fillStyle='rgba(205, 155, 30, 0.30)';}
-	else if(this.movable)
-	{ctx.fillStyle='rgba(125, 225, 125, 0.11)';}
-	else if(this.selected)
-	{ctx.fillStyle='rgba(225, 50, 0, 0.20)';}
 	
-	ctx.strokeStyle = 'rgba(128, 128, 128, 0.4)';
-	ctx.lineWidth = 2.5;
-	if(this.movable && this.selected && this.content){
-		ctx.strokeStyle = "rgb(255, 155, 140)";
-	ctx.lineWidth = 9;}
-	else if(this.selected && this.content){
-		ctx.strokeStyle = "rgb(155, 125, 40)";
-	ctx.lineWidth = 6;}
-	else if(this.movable && this.content)
-	{ctx.strokeStyle = "rgb(205, 125, 130)";
-	ctx.lineWidth = 7;}
-	else
-	{ctx.strokeStyle = "black";}
+	this.drawBlank(ctx, 'black', 2, 'rgba(0, 0, 0, 0)');
 	
+	//ctx.globalCompositeOperation = 'source-atop';
 	
-	ctx.beginPath();
-	ctx.moveTo(this.Points[0].X, this.Points[0].Y);
-	for(let p of this.Points)
-	{		
-		ctx.lineTo(p.X, p.Y);
-	}
-	ctx.closePath();
-	ctx.fill()
+	let fillStyle, strokeStyle, lineWidth=1;
 	
-	
-	if(this.content)
+	let R=200, G=200, B=60, A=0.4;
+	let RF=128, GF=128, BF=128, AF=0;
+
+	if(this.movable)
 	{
-		ctx.globalCompositeOperation = 'source-atop';
-		ctx.fillStyle='rgba(255, 255, 255, 1)';
-		ctx.fill()
-		this.content.x=this.x
-		this.content.y=this.y
-		this.content.draw(ctx)		
+		if(this.content)
+		{
+		R+=25;
+		G-=100;		
+		B-=40;
+		A+=0.2;
+		lineWidth+=2;
+			
+		}else {
+		AF=0.15;
+		RF+=60;
+		GF+=60;
+		BF+=60;}
 	}
 	
-	ctx.stroke();
+	if(this.selected)
+	{
+		AF=0.15;
+		RF+=60;
+		GF+=40;
+		BF-=60;
+		lineWidth+=2;
+	}
 	
-	if(this.Id)
+	
+	var colorStroke = 'rgba('+R +',' +G+',' +B+',' +A +')';
+	var colorFill = 'rgba('+RF+',' +GF+',' +BF+',' +AF +')';
+	
+	this.drawBlank(ctx, colorStroke, lineWidth, colorFill);	
+	
+	ctx.stroke();	
+	ctx.restore();
+	
+	/*if(this.Id)
 	{
 		//draw text for debugging
 		ctx.fillStyle = "white"
@@ -355,10 +399,10 @@ HT.Hexagon.prototype.draw = function(ctx) {
 		ctx.textAlign = "center";
 		ctx.textBaseline = 'middle';
 		//var textWidth = ctx.measureText(this.Planet.BoundingHex.Id);
-		ctx.fillText(this.Id, this.MidPoint.X, this.MidPoint.Y);
+		ctx.fillText(this.Id, this.MidPoint.x, this.MidPoint.y);
 	}
 	
-	if(this.PathCoOrdX !== null && this.PathCoOrdY !== null && typeof(this.PathCoOrdX) != "undefined" && typeof(this.PathCoOrdY) != "undefined")
+	if(this.PathCoOrdx !== null && this.PathCoOrdy !== null && typeof(this.PathCoOrdx) != "undefined" && typeof(this.PathCoOrdy) != "undefined")
 	{
 		//draw co-ordinates for debugging
 		ctx.fillStyle = "white"
@@ -366,7 +410,7 @@ HT.Hexagon.prototype.draw = function(ctx) {
 		ctx.textAlign = "center";
 		ctx.textBaseline = 'middle';
 		//var textWidth = ctx.measureText(this.Planet.BoundingHex.Id);
-		ctx.fillText("("+this.PathCoOrdX+","+this.PathCoOrdY+")", this.MidPoint.X, this.MidPoint.Y + 10);
+		ctx.fillText("("+this.PathCoOrdx+","+this.PathCoOrdy+")", this.MidPoint.x, this.MidPoint.y + 10);
 	}
 	
 	if(HT.Hexagon.Static.DRAWSTATS)
@@ -375,9 +419,9 @@ HT.Hexagon.prototype.draw = function(ctx) {
 		ctx.lineWidth = 2;
 		//draw our x1, y1, and z
 		ctx.beginPath();
-		ctx.moveTo(this.P1.X, this.y);
-		ctx.lineTo(this.P1.X, this.P1.Y);
-		ctx.lineTo(this.x, this.P1.Y);
+		ctx.moveTo(this.P1.x, this.y);
+		ctx.lineTo(this.P1.x, this.P1.y);
+		ctx.lineTo(this.x, this.P1.y);
 		ctx.closePath();
 		ctx.stroke();
 		
@@ -387,12 +431,12 @@ HT.Hexagon.prototype.draw = function(ctx) {
 		ctx.textBaseline = 'middle';
 		//var textWidth = ctx.measureText(this.Planet.BoundingHex.Id);
 		ctx.fillText("z", this.x + this.x1/2 - 8, this.y + this.y1/2);
-		ctx.fillText("x", this.x + this.x1/2, this.P1.Y + 10);
-		ctx.fillText("y", this.P1.X + 2, this.y + this.y1/2);
-		ctx.fillText("z = " + HT.Hexagon.Static.SIDE, this.P1.X, this.P1.Y + this.y1 + 10);
-		ctx.fillText("(" + this.x1.toFixed(2) + "," + this.y1.toFixed(2) + ")", this.P1.X, this.P1.Y + 10);
-	}
-	ctx.restore();
+		ctx.fillText("x", this.x + this.x1/2, this.P1.y + 10);
+		ctx.fillText("y", this.P1.x + 2, this.y + this.y1/2);
+		ctx.fillText("z = " + HT.Hexagon.Static.SIDE, this.P1.x, this.P1.y + this.y1 + 10);
+		ctx.fillText("(" + this.x1.toFixed(2) + "," + this.y1.toFixed(2) + ")", this.P1.x, this.P1.y + 10);
+	}*/
+
 	
 };
 
@@ -405,7 +449,6 @@ HT.Hexagon.prototype.isInBounds = function(x, y) {
 	return this.Contains(new HT.Point(x, y));
 };
 	
-
 /**
  * Returns true if the point is inside this hexagon, it is a quick contains
  * @this {HT.Hexagon}
@@ -413,8 +456,8 @@ HT.Hexagon.prototype.isInBounds = function(x, y) {
  * @return {boolean}
  */
 HT.Hexagon.prototype.isInHexBounds = function(/*Point*/ p) {
-	if(this.TopLeftPoint.X < p.X && this.TopLeftPoint.Y < p.Y &&
-	   p.X < this.BottomRightPoint.X && p.Y < this.BottomRightPoint.Y)
+	if(this.TopLeftPoint.x < p.x && this.TopLeftPoint.y < p.y &&
+	   p.x < this.BottomRightPoint.x && p.y < this.BottomRightPoint.y)
 		return true;
 	return false;
 };
@@ -434,19 +477,19 @@ HT.Hexagon.prototype.Contains = function(/*Point*/ p) {
 	if (this.isInHexBounds(p))
 	{
 		//turn our absolute point into a relative point for comparing with the polygon's points
-		//var pRel = new HT.Point(p.X - this.x, p.Y - this.y);
+		//var pRel = new HT.Point(p.x - this.x, p.y - this.y);
 		var i, j = 0;
-		for (i = 0, j = this.Points.length - 1; i < this.Points.length; j = i++)
+		for (i = 0, j = this.points.length - 1; i < this.points.length; j = i++)
 		{
-			var iP = this.Points[i];
-			var jP = this.Points[j];
+			var iP = this.points[i];
+			var jP = this.points[j];
 			if (
 				(
-				 ((iP.Y <= p.Y) && (p.Y < jP.Y)) ||
-				 ((jP.Y <= p.Y) && (p.Y < iP.Y))
-				//((iP.Y > p.Y) != (jP.Y > p.Y))
+				 ((iP.y <= p.y) && (p.y < jP.y)) ||
+				 ((jP.y <= p.y) && (p.y < iP.y))
+				//((iP.y > p.y) != (jP.y > p.y))
 				) &&
-				(p.X < (jP.X - iP.X) * (p.Y - iP.Y) / (jP.Y - iP.Y) + iP.X)
+				(p.x < (jP.x - iP.x) * (p.y - iP.y) / (jP.y - iP.y) + iP.x)
 			   )
 			{
 				isIn = !isIn;
@@ -457,10 +500,61 @@ HT.Hexagon.prototype.Contains = function(/*Point*/ p) {
 };
 
 
+HT.Intersector = {
+        slope: function (p1, p2) {
+            if (p1.x == p2.x) return false;
+            return (p1.y - p2.y) / (p1.x - p2.x);
+        },
+        getyInt: function (p1, p2) {
+            if (p1.x === p2.x) return p1.y === 0 ? 0 : false;
+            if (p1.y === p2.y) return p1.y;
+            return p1.y - this.slope(p1, p2) * p1.x ;
+        },
+        getxInt: function (p1, p2) {
+            var slope;
+            if (p1.y === p2.y) return p1.x == 0 ? 0 : false;
+            if (p1.x === p2.x) return p1.x;
+            return (-1 * ((slope = this.slope(p1, p2)) * p1.x - p1.y)) / slope;
+        },
+        getIntersection: function (line1, line2) {
+            var slope1, slope2, yint1, yint2, intx, inty;
+            if (line1.p1 == line2.p1 || line1.p1 == line2.p2) return line1.p1;
+            if (line1.p2 == line2.p1 || line1.p2 == line2.p2) return line1.p2;
+
+            slope1 = this.slope(line1.p1, line1.p2);
+            slope2 = this.slope(line2.p1, line2.p2);
+            if (slope1 === slope2) return false;
+
+            yint1 = this.getyInt(line1.p1, line1.p2);
+            yint2 = this.getyInt(line2.p1, line2.p2);
+            if (yint1 === yint2) return yint1 === false ? false : [0, yint1];
+
+            if (slope1 === false) return new HT.Point(line2.p1.y, slope2 * line2.p1.y + yint2);
+            if (slope2 === false) return new HT.Point(line1.p1.y, slope1 * line1.p1.y + yint1);
+            intx = (slope1 * line1.p1.x + yint1 - yint2)/ slope2;
+			
+            return new HT.Point(intx, slope1 * intx + yint1);
+        }
+    };
+
+HT.Hexagon.prototype.getLineAtHeight= function(/*float */ z) {
+	let pointLeft = new HT.Point(this.x, this.y+HT.Hexagon.Static.HEIGHT-z);
+	let pointRight = new HT.Point(this.x+HT.Hexagon.Static.WIDTH, this.y+HT.Hexagon.Static.HEIGHT-z);
+	
+	let lineLarge = new HT.Line(pointLeft,pointRight);
+	let lineLeft = new HT.Line(this.points[5] ,this.points[4]);
+	let lineRight = new HT.Line(this.points[3],this.points[2]);
+	
+	let p1 = HT.Intersector.getIntersection(lineLarge,lineLeft);
+	let p2 = HT.Intersector.getIntersection(lineLarge,lineRight);
+	
+	return new HT.Line(p1,p2);
+}
+	
 HT.Hexagon.Static = {HEIGHT:128
 					, WIDTH:128
 					, SIDE:80
 					, DRAWSTATS: false};//hexagons will have 25 unit sides for now
 
 
-module.exports.HT = HT
+export {HT};

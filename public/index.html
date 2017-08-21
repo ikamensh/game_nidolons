@@ -4,87 +4,36 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="theme-color" content="#000000">
-    <!--
-      manifest.json provides metadata used when your web app is added to the
-      homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
-    -->
+
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
     <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>React App</title>
+    <title>Nidolons Game</title>
   </head>
   <body>
-    <noscript>
-      You need to enable JavaScript to run this app.
-    </noscript>
-	
-	<h1 id="fb-welcome"></h1>
 	
 	<div id="theMap">
 		<div id="backgroundImage"></div>		
 		<canvas id="unitsLayer" width="960" height="600"></canvas>
-		<canvas id="grid" width="960" height="600"></canvas>
-		
+		<canvas id="grid" width="960" height="600"></canvas>		
 	</div>
+	
+	<div id="bottom-panel"> bottom-panel
+	</div>
+	
 	<p id="debugInfo"> blabla </p>
-	<img id="theHeroImg" class="sourceImg" src='Helene.jpg'>
-	<img id="enemy1" class="sourceImg" src='Apparition.jpg'>
+	<img id="theHeroImg" class="sourceImg" src="Helene.jpg">
+	<img id="enemy" class="sourceImg" src="Apparition.jpg">
 	
-	<audio id="clash" src="ButtonUp.mp3" autostart="false">
-	<audio id="step" src="step.mp3" autostart="false">
-
+	<audio id="hero_move" src="hero_move.mp3" autostart="false">
+	<audio id="hero_attack" src="hero_attack.mp3" autostart="false">
+	<audio id="hero_pain" src="hero_pain.mp3" autostart="false">
+	<audio id="hero_death" src="hero_death.mp3" autostart="false">
 	
-	<script>
-	  window.fbAsyncInit = function() {
-		FB.init({
-		  appId      : '112204409445740',
-		  xfbml      : true,
-		  version    : 'v2.10'
-		});
-		
-		// Place following code after FB.init call.
+	<audio id="ghost_move" src="ghost_move.mp3" autostart="false">
+	<audio id="ghost_attack" src="ghost_attack.mp3" autostart="false">
+	<!audio id="ghost_pain" src="ghost_pain.mp3" autostart="false">
+	<audio id="ghost_death" src="ghost_death.mp3" autostart="false">
 
-		function onLogin(response) {
-		  if (response.status == 'connected') {
-			FB.api('/me?fields=first_name', function(data) {
-			  var welcomeBlock = document.getElementById('fb-welcome');
-			  welcomeBlock.innerHTML = 'Hello, ' + data.first_name + '!';
-			});
-		  }
-		}
-
-		FB.getLoginStatus(function(response) {
-		  // Check login status on load, and if the user is
-		  // already logged in, go directly to the welcome message.
-		  if (response.status == 'connected') {
-			onLogin(response);
-		  } else {
-			// Otherwise, show Login dialog first.
-			FB.login(function(response) {
-			  onLogin(response);
-			}, {scope: 'user_friends, email'});
-		  }
-		});
-
-		// ADD ADDITIONAL FACEBOOK CODE HERE
-	  };
-
-	  (function(d, s, id){
-		 var js, fjs = d.getElementsByTagName(s)[0];
-		 if (d.getElementById(id)) {return;}
-		 js = d.createElement(s); js.id = id;
-		 js.src = "//connect.facebook.net/en_US/sdk.js";
-		 fjs.parentNode.insertBefore(js, fjs);
-	   }(document, 'script', 'facebook-jssdk'));
-	</script>
-	
   </body>
 </html>
