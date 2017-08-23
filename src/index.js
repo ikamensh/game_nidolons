@@ -79,30 +79,24 @@ function draw() {
 	ctxGrid.globalCompositeOperation = 'destination-over';
 	ctxGrid.clearRect(0, 0, 960, 600);
   
-  
-    for(let hex of game.grid.Hexes)
-  {
-	  
+  //draw hex field
+    for(let hex of game.grid.Hexes) { 
 	  
 		hex.draw(ctx);
 		ctxGrid.drawImage(canvas,0,0);
-		ctx.clearRect(0, 0, 960, 600);  
-	  
+		ctx.clearRect(0, 0, 960, 600);   
   }
   
-  for(let hex of game.grid.Hexes)
+  //draw units
+  for(let obj of game.allObjects)
   {	  
-	  if(hex.content)
-	  {
-		hex.content.draw(ctx);
+		obj.draw(ctx);
 		ctxGrid.drawImage(canvas,0,0);
-		ctx.clearRect(0, 0, 960, 600);
-	  } 	
-	  
+		ctx.clearRect(0, 0, 960, 600);  
   }
   
-
-  game.timestep(ctx);
+	//also renders effects
+  game.timestep(ctx);  
   ctxGrid.globalCompositeOperation = 'source-over';
   ctxGrid.drawImage(canvas,0,0);
   ctx.clearRect(0, 0, 960, 600);

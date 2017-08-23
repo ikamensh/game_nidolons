@@ -121,14 +121,14 @@ HT.Grid.prototype.goTo = function(/*Hexagon*/ hex, /*Character*/ unit) {
 			unit.playSound('attack', Math.min(1, unit.meleeDamage.amount/hex.content.HP.value));
 			this.game.processAttack(unit,hex.content);			
 			unit.animation = new DisplacementAnimation( new HT.Point( (hex.x-unit.hex.x)/4, (hex.y-unit.hex.y)/4), 12, false);
-			this.game.animationPause=15;
+			this.game.animationPause=11;
 			
 		} else {
 			
-			this.game.animationPause=15;
-			unit.hex.content=null;
-			this.placeUnit(hex, unit);
+			this.game.animationPause=14;
+			unit.hex.content=null;			
 			unit.animation = new DisplacementAnimation( new HT.Point( -(hex.x-unit.hex.x), -(hex.y-unit.hex.y)), 15, false);
+			this.placeUnit(hex, unit);
 			unit.playSound('step',1.);
 		}
 		return true;
@@ -351,6 +351,8 @@ HT.Hexagon.prototype.draw = function(ctx) {
 	
 	//ctx.globalCompositeOperation = 'source-atop';
 	
+	//ctx.scale(0.97, 0.97);
+	
 	let fillStyle, strokeStyle, lineWidth=1;
 	
 	let R=200, G=200, B=60, A=0.4;
@@ -554,7 +556,7 @@ HT.Hexagon.prototype.getLineAtHeight= function(/*float */ z) {
 HT.Hexagon.Static = {HEIGHT:128
 					, WIDTH:128
 					, SIDE:80
-					, DRAWSTATS: false};//hexagons will have 25 unit sides for now
+					, DRAWSTATS: false};
 
 
 export {HT};

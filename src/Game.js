@@ -6,6 +6,7 @@ class Game {
 	
 	constructor( grid ) {		
 		this.hostileUnits=[];
+		this.allObjects=[];
 		this.effects=[];
 		
 		if(grid)
@@ -19,25 +20,52 @@ class Game {
 
 	  }  
 	  
+	processDeath(/*Unit*/ unit){
+	  
+		unit.hex.content=null;
+		unit.hex=null;
+		unit.game=null;
+		
+		  
+		let index = this.allObjects.indexOf(unit);
+				if (index > -1) {
+					this.allObjects.splice(index, 1);
+				}
+				
+		if(unit===this.hero){
+				alert("you're dead. Try again.");
+				window.location.reload(false);
+			}
+				
+		index = this.hostileUnits.indexOf(unit);
+				if (index > -1) {
+					this.hostileUnits.splice(index, 1);
+				}
+	  
+	}	  
 	  
 	  
 	  setHero(/*Unit*/ hero){
-		  this.hero=hero;
+			this.hero=hero;
+			this.allObjects.push(hero);
+			hero.game= this;		  
 	  }
 	  
 	  addHostile(/*Unit*/ unit){
 		  this.hostileUnits.push(unit);
+		  this.allObjects.push(unit);
+		  unit.game= this;	
 	  }
 	  
-	  addDT(/*Disappearing Text*/ txt){
-		  this.effects.push(txt);
+	  addEffect(/*Disappearing Text*/ effect){
+		  this.effects.push(effect);
 	  }
 	  
 	animateEffects(ctx){
 		  
 		for( let eff of this.effects){
 			  
-			  if(eff.draw(ctx))
+			  if(eff.draw(ctx)) //true when effect is over
 			  {
 				  let index = this.effects.indexOf(eff);
 				  this.effects.splice(index, 1);
@@ -129,35 +157,18 @@ class Game {
 	
 	processAttack(/*Unit */ attacker, /*Unit */ recipient){
 		
-		let dmg = recipient.recieveDamage(attacker.meleeDamage);
+		let recipientHex = recipient.hex;
+		let dmg = recipient.recieveDamage(attacker.dealDamage());
 		
 		let color = {R:255, G:120, B:120};
-		let anim = new DisplacementAnimation( {x: recipient.hex.x-attacker.hex.x, y: recipient.hex.y-attacker.hex.y}, 105, true);
-		this.addDT(
+		let anim = new DisplacementAnimation( {x: recipientHex.x-attacker.hex.x, y: recipientHex.y-attacker.hex.y}, 105, true);
+		this.addEffect(
 			new DisappearingText(dmg,
-									recipient.hex.MidPoint.x+32, 
-									recipient.hex.MidPoint.y-32, 
+									recipientHex.MidPoint.x+32, 
+									recipientHex.MidPoint.y-32, 
 									60, new DynamicValue(45), 
-									12, anim, color));
-		
-		if(recipient.HP.value<=0)
-		{
-			recipient.playSound('death', (0.5+0.5*dmg/recipient.HP.maxValue));
-			recipient.hex.content=null;
-			recipient.hex=null;
-
-			if(recipient===this.hero){
-				alert("you're dead. Try again.");
-				window.location.reload(false);
-			} else {
-				let index = this.hostileUnits.indexOf(recipient);
-				if (index > -1) {
-					this.hostileUnits.splice(index, 1);
-				}
-			}			
-		}	else {
-			recipient.playSound('pain', (0.1+0.9*dmg/recipient.HP.maxValue));
-		}	
+									12, anim, color));						
+	
 	}
 	
 	refreshMovable(){

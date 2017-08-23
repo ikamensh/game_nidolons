@@ -11,6 +11,7 @@ class MapObject {
 		this.hex = "not_placed_yet";
 		this.soundsDict = soundsDict;
 		
+		
 	}
 	
 	playSound(/*String */ id, /*Double*/ volume){
@@ -25,10 +26,6 @@ class MapObject {
 		ctx.save();
 	  //ctx.drawImage(this.avatar, this.x, this.y, this.x + this.avatar.width, this.y + this.avatar.height, this.x, this.y, this.x + HT.Hexagon.Static.WIDTH, this.y + HT.Hexagon.Static.HEIGHT);  
 	  
-		
-
-		
-
 		if(this.animation){
 			var animationDisplacement = this.animation.calculateAnimDisplacement();
 			if(/*Point */ animationDisplacement){
@@ -73,15 +70,26 @@ class Hero extends MapObject {
 		
 	}
 	
+	dealDamage(){
+		return this.meleeDamage;
+	}
+	
 	recieveDamage(/*Damage*/ dmg) {
 		
-		if( this.armor[dmg.type] > dmg.amount){
-			this.HP.value-=1;
-			return 1;
+		let dmgDealt = this.armor[dmg.type] > dmg.amount ? 1 : (dmg.amount - this.armor[dmg.type]);
+		
+		this.HP.value -= dmgDealt;
+		
+		if(this.HP.value>0){
+			this.playSound('pain', (dmgDealt/(dmgDealt + this.HP.maxValue)) );
 		} else {
-			this.HP.value -= (dmg.amount - this.armor[dmg.type]);
-			return (dmg.amount - this.armor[dmg.type]);
-		}	
+			this.playSound('death', (dmgDealt/(dmgDealt + this.HP.maxValue)));
+			this.game.processDeath(this);
+		}
+
+
+
+		return dmgDealt;		
 	}	
 }
 
@@ -159,7 +167,5 @@ class DisplacementAnimation{
 		}	
 	}
 }
-
-
 
 export {Hero, DynamicValue, DisplacementAnimation, Damage, DamageType, Armor, ParamsDict};
