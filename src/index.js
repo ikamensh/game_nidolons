@@ -1,3 +1,5 @@
+import React from 'react';
+import ReactDOM from 'react-dom';
 import './index.css';
 import {HT} from './grid.js'
 import {Hero} from './Character.js'
@@ -12,6 +14,11 @@ window.$ = $;
 
 var img = document.getElementById('theHeroImg');
 var img1 = document.getElementById('enemy');
+
+var dmgIcon = document.getElementById("dmg_img");
+var armorIcon1 = document.getElementById("A1");
+var armorIcon2 = document.getElementById("A2");
+var armorIcon3 = document.getElementById("A3");
 
 var hero_move = document.getElementById("hero_move");
 var hero_attack = document.getElementById("hero_attack");
@@ -50,7 +57,7 @@ var ctxGrid = canvasGrid.getContext('2d');
 
 var debugInfo = document.getElementById('debugInfo');
 
-var theGrid = new HT.Grid(960, 600);
+var theGrid = new HT.Grid(960, 500);
 
 var game = new Game(theGrid);
 
@@ -182,3 +189,157 @@ function getMousePos(canvas, evt) {
   }, false);
 
 // ======================================
+
+
+
+class AttributeDisplay extends React.Component {
+	constructor(props) {
+			  super(props);
+			  this.state = {
+				img : props.img,
+				num : props.num				
+			  };
+		}
+	
+	
+		render() {
+		return (<div className="board-row">
+				  <img className="square" src={this.state.img} />
+				  <div className="square"> {this.state.num} </div>
+			</div>);
+  }
+}
+
+class ArmorDisplay extends React.Component {
+	constructor(props) {
+				  super(props);
+				  this.state = {
+					armor : props.armor
+				  };
+			}
+			
+	render(){
+		return(
+		<div className="armor">
+			<AttributeDisplay img={armorIcon1.source} num={this.state.armor.SLASH} />
+			<AttributeDisplay img={armorIcon2.source} num={this.state.armor.PIERCE} />
+			<AttributeDisplay img={armorIcon3.source} num={this.state.armor.MAGIC} />			
+        </div>
+		);
+	}
+}
+
+class DamageDisplay extends React.Component {	
+	constructor(props) {
+			  super(props);
+			  this.state = {
+				damage : props.damage
+			  };
+		}
+
+	
+	render(){
+		return(
+		<div className="damage">
+			<AttributeDisplay img={dmgIcon.source} 
+			//<AttributeDisplay img={dmgImgs[this.state.damage.type]} 
+								num={this.state.damage.amount} />					
+        </div>
+		);
+	}
+}
+
+class UnitFace extends React.Component {	
+
+	constructor(props) {
+		  super(props);
+		  this.state = {
+			img : props.img,
+			name : props.name ,
+			HP : props.HP
+		  };
+	}
+	
+	render(){
+		return(
+		<div className="unit-face">
+			<img
+				src={this.state.img.source}
+			/>
+			<label> {this.state.name} </label>
+			<progress value={this.state.HP.value} 
+						max={this.state.HP.maxValue}> 
+						</progress>
+        </div>
+		);
+	}
+}
+
+class UnitStats extends React.Component {
+	constructor(props) {
+			  super(props);
+			  this.state = {
+				unit : props.unit
+			  };
+		}
+	
+	render(){
+		if(this.state.unit){
+		return(
+		<div className="unit-stats">
+				<UnitFace img = {this.state.unit.avatar} 
+				name = "Helene"
+				HP = {this.state.unit.HP}/>
+				<DamageDisplay damage={this.state.unit.meleeDamage}/>
+				<ArmorDisplay armor={this.state.unit.armor}/>
+        </div>
+		);
+		}
+		else{
+			return (
+			<div>
+					UnitStats: no unit found	
+			</div>);} 
+	}
+}
+
+
+class BottomPanel extends React.Component {
+	
+	constructor(props) {
+			  super(props);
+			  this.state = {
+				unit : props.unit
+			  };
+		}
+	
+  render() {	
+
+	if (this.state.unit){
+  
+		return (
+		  <div className="HeroView">
+			<UnitStats unit={this.state.unit}/>
+			//<UnitStats unit={game.selectedUnit}/>
+		  </div>
+	  );
+  }
+	else {
+		return (
+		<div className="HeroView">
+			no unit found
+		  </div>);
+	}
+  
+  }
+}
+
+// ========================================
+
+ReactDOM.render(
+  <BottomPanel unit={game.hero}/>,
+  document.getElementById('bottom-panel')
+);
+
+
+

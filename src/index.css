@@ -23,18 +23,18 @@ body {
 #unitsLayer {
 	position: fixed;
 	left: 20px;
-	top: 80px;
-	width:920px;
-	height:560px;
+	top: 50px;
+	width:960px;
+	height:500px;
 	user-select: none;
 }
 
 #grid {
 	position: fixed;
 	left: 20px;
-	top: 80px;
-	width:920px;
-	height:560px;
+	top: 50px;
+	width:960px;
+	height:500px;
 	user-select: none;
 }
 
@@ -45,6 +45,26 @@ body {
 	background-color:  #ccffcc;
 	bottom: 20px;
 	
+}
+
+.unit-stats {
+	  display: flex;
+	flex-direction: row;
+}
+
+.square {
+  background: #fff;
+  border: 1px solid #999;
+  float: left;
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 34px;
+  height: 34px;
+  margin-right: -1px;
+  margin-top: -1px;
+  padding: 0;
+  text-align: center;
+  width: 34px;
 }
 
 .sourceImg {
