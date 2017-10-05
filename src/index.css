@@ -47,9 +47,49 @@ body {
 	
 }
 
-.unit-stats {
-	  display: flex;
+
+.unit_view {	
+	border: 3px dashed #ccc;
+	display: flex;
+	flex-grow: 1;
 	flex-direction: row;
+	justify-content: space-between;
+
+}
+
+.inner_unit_view {	
+	border: 3px dashed #dd3;
+	display: flex;
+	flex-grow: 1;
+	flex-direction: row;
+	justify-content: space-between;
+	width: 75%;
+}
+
+.units_view_in_pb {
+	display: flex;
+	flex-direction: row;
+}
+
+.unit_face {
+	border: 3px dashed #3dd;
+	width: 35%;
+	display: flex;
+	flex-direction: column;
+}
+
+progress[value]::-webkit-progress-value {
+  background-image:
+	   -webkit-linear-gradient(-45deg, 
+	                           transparent 33%, rgba(0, 0, 0, .1) 33%, 
+	                           rgba(0,0, 0, .1) 66%, transparent 66%),
+	   -webkit-linear-gradient(top, 
+	                           rgba(255, 255, 255, .25), 
+	                           rgba(0, 0, 0, .25)),
+	   -webkit-linear-gradient(left, #09b, #f44);
+
+    border-radius: 2px; 
+    background-size: 35px 20px, 100% 100%, 100% 100%;
 }
 
 .square {

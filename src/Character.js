@@ -63,7 +63,7 @@ class Hero extends MapObject {
 	constructor( /*Image*/ avatarImage, /* txt_id -> Sound */ soundsDict, /*ParamsDict*/ params)
 	{
 		super(avatarImage, soundsDict);
-		
+		this.name = params.name;
 		this.HP = new DynamicValue(params.HP);
 		this.meleeDamage = new Damage(params.dmg.amount, params.dmg.type); 
 		this.armor = new Armor(params.armor[0],params.armor[1],params.armor[2]) ;
@@ -104,7 +104,8 @@ class Armor {
 }
 
 class ParamsDict {
-	constructor(HP, dmg, armor){
+	constructor(name, HP, dmg, armor){
+		this.name = name;
 		this.HP = HP;
 		this.dmg = dmg;
 		this.armor = armor;

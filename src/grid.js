@@ -169,6 +169,7 @@ HT.Grid.prototype.selectHex = function(/*float*/ x,  /*float*/ y){
 	if(hex)
 	{		
 		hex.selected=true;
+		return hex.content;
 	}
 	
 	

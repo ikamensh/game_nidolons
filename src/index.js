@@ -107,6 +107,10 @@ function draw() {
   ctxGrid.globalCompositeOperation = 'source-over';
   ctxGrid.drawImage(canvas,0,0);
   ctx.clearRect(0, 0, 960, 600);
+  if(game.reactComponent)
+  {
+	  game.reactComponent.update(game.hero, game.selectedUnit);
+  }
   
   window.requestAnimationFrame(draw);
   debugInfo.innerHTML= theHero.x+" "+theHero.y
@@ -168,8 +172,10 @@ function getMousePos(canvas, evt) {
   
   canvasGrid.addEventListener('mousemove', function(evt) {
     var mousePos = getMousePos(canvasGrid, evt);
-	game.grid.selectHex(mousePos.x+15, mousePos.y+15);
-    console.log('Mouse position: ' + mousePos.x + ',' + mousePos.y);
+	let aUnit = game.grid.selectHex(mousePos.x+15, mousePos.y+15);
+	if(aUnit && aUnit!=game.hero)
+	{game.selectedUnit = aUnit;}
+    console.log('Found at' + mousePos.x + ',' + mousePos.y +':' +game.selectedUnit);
   }, false);
   
   canvasGrid.addEventListener('click', function(evt) {
@@ -193,82 +199,48 @@ function getMousePos(canvas, evt) {
 
 
 class AttributeDisplay extends React.Component {
-	constructor(props) {
-			  super(props);
-			  this.state = {
-				img : props.img,
-				num : props.num				
-			  };
-		}
-	
-	
 		render() {
 		return (<div className="board-row">
-				  <img className="square" src={this.state.img} />
-				  <div className="square"> {this.state.num} </div>
+				  <img className="square" src={this.props.img} />
+				  <div className="square"> {this.props.num} </div>
 			</div>);
   }
 }
 
 class ArmorDisplay extends React.Component {
-	constructor(props) {
-				  super(props);
-				  this.state = {
-					armor : props.armor
-				  };
-			}
-			
+	
 	render(){
 		return(
 		<div className="armor">
-			<AttributeDisplay img={armorIcon1.source} num={this.state.armor.SLASH} />
-			<AttributeDisplay img={armorIcon2.source} num={this.state.armor.PIERCE} />
-			<AttributeDisplay img={armorIcon3.source} num={this.state.armor.MAGIC} />			
+			<AttributeDisplay img={require('./icons/icon1.png')} num={this.props.armor.SLASH} />
+			<AttributeDisplay img={require('./icons/icon2.ico')} num={this.props.armor.PIERCE} />
+			<AttributeDisplay img={require('./icons/icon3.png')} num={this.props.armor.MAGIC} />			
         </div>
 		);
 	}
 }
 
 class DamageDisplay extends React.Component {	
-	constructor(props) {
-			  super(props);
-			  this.state = {
-				damage : props.damage
-			  };
-		}
-
-	
 	render(){
 		return(
 		<div className="damage">
-			<AttributeDisplay img={dmgIcon.source} 
-			//<AttributeDisplay img={dmgImgs[this.state.damage.type]} 
-								num={this.state.damage.amount} />					
+			<AttributeDisplay img={require('./icons/icon_dmg.ico')}	num={this.props.damage.amount} />					
         </div>
 		);
 	}
 }
 
 class UnitFace extends React.Component {	
-
-	constructor(props) {
-		  super(props);
-		  this.state = {
-			img : props.img,
-			name : props.name ,
-			HP : props.HP
-		  };
-	}
 	
 	render(){
 		return(
-		<div className="unit-face">
-			<img
-				src={this.state.img.source}
-			/>
-			<label> {this.state.name} </label>
-			<progress value={this.state.HP.value} 
-						max={this.state.HP.maxValue}> 
+		<div className="unit_face">
+			<img src={this.props.img} />
+			<label> {this.props.name} </label>
+			<div> {this.props.HP.value}/{this.props.HP.maxValue} </div>
+			
+			<progress className = "hp_bar" value={this.props.HP.value} 
+						max={this.props.HP.maxValue}> 
 						</progress>
         </div>
 		);
@@ -276,31 +248,28 @@ class UnitFace extends React.Component {
 }
 
 class UnitStats extends React.Component {
-	constructor(props) {
-			  super(props);
-			  this.state = {
-				unit : props.unit
-			  };
-		}
 	
 	render(){
-		if(this.state.unit){
-		return(
-		<div className="unit-stats">
-				<UnitFace img = {this.state.unit.avatar} 
-				name = "Helene"
-				HP = {this.state.unit.HP}/>
-				<DamageDisplay damage={this.state.unit.meleeDamage}/>
-				<ArmorDisplay armor={this.state.unit.armor}/>
-        </div>
-		);
-		}
-		else{
+		
+		if(this.props.unit){
+				
+			return(			
+			<div className="unit_view">
+			<div className="inner_unit_view">
+					<UnitFace img = {require('./res/tr_128.png')} 
+					name = {this.props.unit.name}
+					HP = {this.props.unit.HP}/>
+					<DamageDisplay damage={this.props.unit.meleeDamage}/>
+					<ArmorDisplay armor={this.props.unit.armor}/>
+			</div> </div>
+			);
+		} else {
 			return (
-			<div>
+			<div className="unit_view">
+			<div className="inner_unit_view">
 					UnitStats: no unit found	
-			</div>);} 
-	}
+			</div> </div>);} 
+		}
 }
 
 
@@ -309,35 +278,34 @@ class BottomPanel extends React.Component {
 	constructor(props) {
 			  super(props);
 			  this.state = {
+				selectedUnit : props.selectedUnit,
 				unit : props.unit
 			  };
 		}
+		
+		update(hero, selected){
+			if(this.state.hero!=hero || this.state.selectedUnit!=selected)
+			{
+				this.setState({unit: hero, selectedUnit: selected});
+			}
+		}
+		
+		
 	
-  render() {	
-
-	if (this.state.unit){
-  
-		return (
-		  <div className="HeroView">
+  render() {
+		return ( 
+		  <div className="units_view_in_pb">
 			<UnitStats unit={this.state.unit}/>
-			//<UnitStats unit={game.selectedUnit}/>
+			<UnitStats unit={this.state.selectedUnit}/>
 		  </div>
 	  );
-  }
-	else {
-		return (
-		<div className="HeroView">
-			no unit found
-		  </div>);
-	}
-  
   }
 }
 
 // ========================================
 
-ReactDOM.render(
-  <BottomPanel unit={game.hero}/>,
+game.reactComponent = ReactDOM.render(
+  <BottomPanel unit={game.hero} selectedUnit={game.hero}/>,
   document.getElementById('bottom-panel')
 );
 
