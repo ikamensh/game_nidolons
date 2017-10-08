@@ -13,61 +13,55 @@ import $ from 'jquery';
 // export for others scripts to use
 window.$ = $;
 
-var img = document.getElementById('theHeroImg');
-var img1 = document.getElementById('enemy');
+let img = document.getElementById('theHeroImg');
+let img1 = document.getElementById('enemy');
 
-var dmgIcon = document.getElementById("dmg_img");
-var armorIcon1 = document.getElementById("A1");
-var armorIcon2 = document.getElementById("A2");
-var armorIcon3 = document.getElementById("A3");
 
-var hero_move = document.getElementById("hero_move");
-var hero_attack = document.getElementById("hero_attack");
-var hero_pain = document.getElementById("hero_pain");
-var hero_death = document.getElementById("hero_death");
+let hero_move = document.getElementById("hero_move");
+let hero_attack = document.getElementById("hero_attack");
+let hero_pain = document.getElementById("hero_pain");
+let hero_death = document.getElementById("hero_death");
 
-var ghost_move = document.getElementById("ghost_move");
-var ghost_attack = document.getElementById("ghost_attack");
-var ghost_pain = document.getElementById("ghost_pain");
-var ghost_death = document.getElementById("ghost_death");
+let ghost_move = document.getElementById("ghost_move");
+let ghost_attack = document.getElementById("ghost_attack");
+let ghost_pain = document.getElementById("ghost_pain");
+let ghost_death = document.getElementById("ghost_death");
 
-var soundStep = document.getElementById("step");
+let soundStep = document.getElementById("step");
 
-var heroSoundDict = {
+let heroSoundDict = {
 	attack: hero_attack,
 	move: hero_move,
 	pain: hero_pain,
 	death: hero_death
-}
+};
 
-var ghostSoundDict = {
+let ghostSoundDict = {
 	attack: ghost_attack,
 	move: ghost_move,
 	pain: ghost_pain,
 	death: ghost_death
-}
-
-var dx = 110.8512517;
-var dy = 128;
-
-var canvas = document.getElementById('unitsLayer');
-var ctx = canvas.getContext('2d');  
-
-var canvasGrid = document.getElementById('grid');
-var ctxGrid = canvasGrid.getContext('2d');
-
-var debugInfo = document.getElementById('debugInfo');
-
-var theGrid = new HT.Grid(960, 500);
-
-var game = new Game(theGrid);
+};
 
 
-var theHero = new Hero(img, heroSoundDict, heroParams);
+let canvas = document.getElementById('unitsLayer');
+let ctx = canvas.getContext('2d');
+
+let canvasGrid = document.getElementById('grid');
+let ctxGrid = canvasGrid.getContext('2d');
+
+let debugInfo = document.getElementById('debugInfo');
+
+let theGrid = new HT.Grid(960, 500);
+
+let game = new Game(theGrid);
+
+
+let theHero = new Hero(img, heroSoundDict, heroParams);
 game.grid.placeUnit(game.grid.GetHexById("(2,4)"), theHero);
 game.setHero(theHero);
 
-var enemy = new Hero(img1, ghostSoundDict, ghostParams);
+let enemy = new Hero(img1, ghostSoundDict, ghostParams);
 game.addHostile(enemy);
 game.grid.placeUnit(game.grid.GetHexById("(5,5)"), enemy);
 
@@ -125,32 +119,32 @@ document.onkeydown = function(evt) {
 		
 		let hex = null;
 		//q
-		if (evt.keyCode == 81) {
+		if (evt.keyCode === 81) {
 			hex = game.grid.moveUnitNW(theHero);		
 		}
 		
 		//w
-		if (evt.keyCode == 87) {
+		if (evt.keyCode === 87) {
 			hex = game.grid.moveUnitN(theHero);
 		}
 		
 		//e
-		if (evt.keyCode == 69) {
+		if (evt.keyCode === 69) {
 			hex = game.grid.moveUnitNE(theHero);	
 		}
 		
 		//a
-		if (evt.keyCode == 65) {
+		if (evt.keyCode === 65) {
 			hex = game.grid.moveUnitSW(theHero);
 		}
 		
 		//s
-		if (evt.keyCode == 83) {
+		if (evt.keyCode === 83) {
 			hex = game.grid.moveUnitS(theHero);
 		}
 		
 		//d
-		if (evt.keyCode == 68) {
+		if (evt.keyCode === 68) {
 			hex = game.grid.moveUnitSE(theHero);
 		}
 		if(game.grid.goTo(hex, theHero)){
@@ -164,7 +158,7 @@ document.onkeydown = function(evt) {
 
 
 function getMousePos(canvas, evt) {
-    var rect = canvas.getBoundingClientRect();
+    let rect = canvas.getBoundingClientRect();
     return {
       x: evt.clientX - rect.left,
       y: evt.clientY - rect.top
@@ -172,16 +166,16 @@ function getMousePos(canvas, evt) {
   }
   
   canvasGrid.addEventListener('mousemove', function(evt) {
-    var mousePos = getMousePos(canvasGrid, evt);
+    let mousePos = getMousePos(canvasGrid, evt);
 	let aUnit = game.grid.selectHex(mousePos.x+15, mousePos.y+15);
-	if(aUnit && aUnit!=game.hero)
+	if(aUnit && aUnit !== game.hero)
 	{game.selectedUnit = aUnit;}
     console.log('Found at' + mousePos.x + ',' + mousePos.y +':' +game.selectedUnit);
   }, false);
   
   canvasGrid.addEventListener('click', function(evt) {
 	  if(game.heroActive){
-		var mousePos = getMousePos(canvasGrid, evt);
+		let mousePos = getMousePos(canvasGrid, evt);
 		game.grid.selectHex(mousePos.x+15, mousePos.y+15);
 		
 		if(game.issueOrderGo(game.grid.selectedHex)){

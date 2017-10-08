@@ -19,15 +19,15 @@ class DisappearingText {
 			var alpha = 1;
 			this.lifetime--;
 		} else if (this.fadetime){
-			var alpha = this.fadetime.getPercentageFull();
+            var alpha = this.fadetime.getPercentageFull();
 			this.fadetime.value--;
 		} else {			
 			return true;
 		}
 		
-		ctx.save();			
-		
-		var colorStroke = 'rgba('+this.color.R +',' +this.color.G+',' +this.color.B+',' +alpha +')';
+		ctx.save();
+
+        let colorStroke = 'rgba('+this.color.R +',' +this.color.G+',' +this.color.B+',' +alpha +')';
 		
 		if(this.animation){
 			var animationDisplacement = this.animation.calculateAnimDisplacement();

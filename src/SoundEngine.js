@@ -17,4 +17,4 @@ class SoundsEngine {
 
 var soundsEngine = new SoundsEngine();
 
-module.exports.soundsEngine = soundsEngine;
+export {soundsEngine};

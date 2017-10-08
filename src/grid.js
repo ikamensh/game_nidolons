@@ -11,28 +11,28 @@ HT.Grid = function(/*double*/ width, /*double*/ height) {
 	
 	this.Hexes = [];
 	//setup a dictionary for use later for assigning the x or y CoOrd (depending on Orientation)
-	var HexagonsByxOryCoOrd = {}; //Dictionary<int, List<Hexagon>>
-	var selectedHex = null;
-	var row = 0;
-	var y = 20.0;
+	let HexagonsByxOryCoOrd = {}; //Dictionary<int, List<Hexagon>>
+    let selectedHex = null;
+    let row = 0;
+    let y = 20.0;
 	while (y + HT.Hexagon.Static.HEIGHT <= height-20)
 	{
-		var col = 0;
+        let col = 0;
 
-		var offset = 0.0;
-		if (row % 2 == 1)
+        let offset = 0.0;
+		if (row % 2 === 1)
 		{
 			offset = (HT.Hexagon.Static.WIDTH - HT.Hexagon.Static.SIDE)/2 + HT.Hexagon.Static.SIDE;
 			col = 1;
 		}
-		
-		var x = offset+50;
+
+        let x = offset+50;
 		while (x + HT.Hexagon.Static.WIDTH <= width-20)
 		{
-		    var hexId = this.GetHexId(row, col);
-			var h = new HT.Hexagon(hexId, x, y, row, col);
-			
-			var pathCoOrd = col;
+            let hexId = this.GetHexId(row, col);
+            let h = new HT.Hexagon(hexId, x, y, row, col);
+
+            let pathCoOrd = col;
 			h.PathCoOrdx = col;//the column is the x coordinate of the hex, for the y coordinate we need to get more fancy
 			
 			this.Hexes.push(h);
@@ -50,13 +50,13 @@ HT.Grid = function(/*double*/ width, /*double*/ height) {
 	}
 
 	//finally go through our list of hexagons by their x co-ordinate to assign the y co-ordinate
-	for (var coOrd1 in HexagonsByxOryCoOrd)
+	for (let coOrd1 in HexagonsByxOryCoOrd)
 	{
-		var hexagonsByxOry = HexagonsByxOryCoOrd[coOrd1];
-		var coOrd2 = Math.floor(coOrd1 / 2) + (coOrd1 % 2);
-		for (var i in hexagonsByxOry)
+        let hexagonsByxOry = HexagonsByxOryCoOrd[coOrd1];
+        let coOrd2 = Math.floor(coOrd1 / 2) + (coOrd1 % 2);
+		for (let i in hexagonsByxOry)
 		{
-			var h = hexagonsByxOry[i];//Hexagon			
+            let h = hexagonsByxOry[i];//Hexagon
 			h.PathCoOrdy = coOrd2++;
 		}
 	}
@@ -76,7 +76,7 @@ HT.Grid.prototype.GetHexId = function(row, col) {
  */
 HT.Grid.prototype.GetHexAt = function(x, y) {
 	//find the hex that contains this point
-	for (var h in this.Hexes)
+	for (let h in this.Hexes)
 	{
 		if (this.Hexes[h].isInBounds(x,y))
 		{
@@ -90,7 +90,7 @@ HT.Grid.prototype.GetHexAt = function(x, y) {
 HT.Grid.prototype.markGivenMovable = function(/*Array<Hexagon> */ movable){
 	for(let hex of this.Hexes){
 			
-			if(movable && movable.indexOf(hex)!=-1)
+			if(movable && movable.indexOf(hex) !== -1)
 			{	
 				hex.movable=true;				
 			} else {
@@ -146,7 +146,7 @@ HT.Grid.prototype.getMovableHexes = function(/*Character*/ unit) {
 	{
 		for(let hex of this.Hexes){
 			console.log(this.GetHexDistance(hex, unit.hex)+" for hexes "+hex.Id+" & "+ unit.hex.Id);
-			if(this.GetHexDistance(hex, unit.hex)==1)
+			if(this.GetHexDistance(hex, unit.hex)===1)
 			{	
 				movable_hexes.push(hex);				
 			}
@@ -171,9 +171,8 @@ HT.Grid.prototype.selectHex = function(/*float*/ x,  /*float*/ y){
 		hex.selected=true;
 		return hex.content;
 	}
-	
-	
-}
+
+};
 
 HT.Grid.prototype.moveUnitN = function(/*Character*/ unit) {	
 	let hex = unit.hex;
@@ -227,7 +226,7 @@ HT.Grid.prototype.GetHexDistance = function(/*Hexagon*/ h1, /*Hexagon*/ h2) {
 HT.Grid.prototype.GetHexById = function(id) {
 	for(var i in this.Hexes)
 	{
-		if(this.Hexes[i].Id == id)
+		if(this.Hexes[i].Id === id)
 		{
 			return this.Hexes[i];
 		}
@@ -288,8 +287,8 @@ HT.Line.STATIC.draw = function(ctx, p1, p2, color, thickness) {
  */
 HT.Hexagon = function(id, x, y, row, col) {
 	this.points = [];//Polygon Base
-	var x1 = null;
-	var y1 = null;
+	let x1 = null;
+	let y1 = null;
 	this.row = row;
 	this.col = col;
 	
@@ -386,8 +385,8 @@ HT.Hexagon.prototype.draw = function(ctx) {
 	}
 	
 	
-	var colorStroke = 'rgba('+R +',' +G+',' +B+',' +A +')';
-	var colorFill = 'rgba('+RF+',' +GF+',' +BF+',' +AF +')';
+	let colorStroke = 'rgba('+R +',' +G+',' +B+',' +A +')';
+	let colorFill = 'rgba('+RF+',' +GF+',' +BF+',' +AF +')';
 	
 	this.drawBlank(ctx, colorStroke, lineWidth, colorFill);	
 	
@@ -505,7 +504,7 @@ HT.Hexagon.prototype.Contains = function(/*Point*/ p) {
 
 HT.Intersector = {
         slope: function (p1, p2) {
-            if (p1.x == p2.x) return false;
+            if (p1.x === p2.x) return false;
             return (p1.y - p2.y) / (p1.x - p2.x);
         },
         getyInt: function (p1, p2) {
@@ -515,14 +514,14 @@ HT.Intersector = {
         },
         getxInt: function (p1, p2) {
             var slope;
-            if (p1.y === p2.y) return p1.x == 0 ? 0 : false;
+            if (p1.y === p2.y) return p1.x === 0 ? 0 : false;
             if (p1.x === p2.x) return p1.x;
             return (-1 * ((slope = this.slope(p1, p2)) * p1.x - p1.y)) / slope;
         },
         getIntersection: function (line1, line2) {
             var slope1, slope2, yint1, yint2, intx, inty;
-            if (line1.p1 == line2.p1 || line1.p1 == line2.p2) return line1.p1;
-            if (line1.p2 == line2.p1 || line1.p2 == line2.p2) return line1.p2;
+            if (line1.p1 === line2.p1 || line1.p1 === line2.p2) return line1.p1;
+            if (line1.p2 === line2.p1 || line1.p2 === line2.p2) return line1.p2;
 
             slope1 = this.slope(line1.p1, line1.p2);
             slope2 = this.slope(line2.p1, line2.p2);

@@ -86,7 +86,7 @@ class BottomPanel extends React.Component {
 		}
 		
 		update(hero, selected){
-			if(this.state.hero!=hero || this.state.selectedUnit!=selected)
+			if(this.state.hero!==hero || this.state.selectedUnit!==selected)
 			{
 				this.setState({unit: hero, selectedUnit: selected});
 			}

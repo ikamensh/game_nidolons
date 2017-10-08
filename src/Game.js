@@ -122,7 +122,7 @@ class Game {
 			  
 			  //else lets get rolling
 				let randomMove = possibleMoves[Math.floor(Math.random()*possibleMoves.length)];
-				if(randomMove.content && this.hostileUnits.indexOf(randomMove.content)!=-1){
+				if(randomMove.content && this.hostileUnits.indexOf(randomMove.content)!==-1){
 							 //maybe do nothing?
 						 if(Math.random() >0.50){ 
 							return;
