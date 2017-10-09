@@ -140,7 +140,7 @@ class Game {
 			  
 			  if(possibleMoves.length)	{
 					let closestToTarget = possibleMoves[0];
-					let distToTarget = 	this.grid.GetHexDistance(closestToTarget,this.hero.hex)	;		  
+					let distToTarget = 	this.grid.GetHexDistance(closestToTarget,this.hero.hex)	;
 					for( let hex of possibleMoves){
 						  if(this.grid.GetHexDistance(hex,this.hero.hex)< distToTarget) {
 							  

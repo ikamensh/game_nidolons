@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import {HT} from './grid.js'
+import {Grid} from './grid.js'
 import {Hero} from './Character.js'
 import {Game} from './Game.js'
 import {BottomPanel} from './BottomPanel.js'
@@ -52,7 +52,7 @@ let ctxGrid = canvasGrid.getContext('2d');
 
 let debugInfo = document.getElementById('debugInfo');
 
-let theGrid = new HT.Grid(960, 500);
+let theGrid = new Grid(960, 500);
 
 let game = new Game(theGrid);
 
