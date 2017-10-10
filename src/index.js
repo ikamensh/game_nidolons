@@ -167,7 +167,7 @@ function getMousePos(canvas, evt) {
   
   canvasGrid.addEventListener('mousemove', function(evt) {
     let mousePos = getMousePos(canvasGrid, evt);
-	let aUnit = game.grid.selectHex(mousePos.x+15, mousePos.y+15);
+	let aUnit = game.grid.selectHex(mousePos.x, mousePos.y);
 	if(aUnit && aUnit !== game.hero)
 	{game.selectedUnit = aUnit;}
     console.log('Found at' + mousePos.x + ',' + mousePos.y +':' +game.selectedUnit);
@@ -176,7 +176,7 @@ function getMousePos(canvas, evt) {
   canvasGrid.addEventListener('click', function(evt) {
 	  if(game.heroActive){
 		let mousePos = getMousePos(canvasGrid, evt);
-		game.grid.selectHex(mousePos.x+15, mousePos.y+15);
+		game.grid.selectHex(mousePos.x, mousePos.y);
 		
 		if(game.issueOrderGo(game.grid.selectedHex)){
 			game.heroActive=false;
