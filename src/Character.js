@@ -1,4 +1,5 @@
 import {soundsEngine} from './SoundEngine';
+import {createCanvas} from "./Utils"
 
 class MapObject { 
 	
@@ -9,6 +10,9 @@ class MapObject {
 		this.avatar = avatarImage;
 		this.hex = "not_placed_yet";
 		this.soundsDict = soundsDict;
+		this.canvas = createCanvas(128,128);
+		this.ctx=this.canvas.getContext('2d');
+        this.needsRedraw=true;
 		
 		
 	}
@@ -20,37 +24,46 @@ class MapObject {
 		}
 		
 	}
-	
-	draw(/* Canvas2D */ctx){
-		ctx.save();
 
-		if(this.animation){
-			var animationDisplacement = this.animation.calculateAnimDisplacement();
-			if(/*Point */ animationDisplacement){
-				ctx.translate(animationDisplacement.x,animationDisplacement.y);
-			}
-		}
-		
-		this.hex.drawBlank(ctx, 'black', 0, 'black');
-		ctx.globalCompositeOperation = 'source-atop';
-		ctx.drawImage(this.avatar, this.hex.x, this.hex.y);
-		
-		
+    draw(/* Canvas2D */ctx){
+	    if(this.needsRedraw){
+	        this.redraw();
+	        this.needsRedraw=false;
+        }
+
+        ctx.save();
+
+        if(this.animation){
+            let animationDisplacement = this.animation.calculateAnimDisplacement();
+            if(/*Point */ animationDisplacement){
+                ctx.translate(animationDisplacement.x,animationDisplacement.y);
+            }
+        }
+
+        ctx.drawImage(this.canvas, this.hex.x, this.hex.y);
+        ctx.restore();
+    };
+
+	redraw(){
+
+        this.ctx.save();
+        this.ctx.translate(-this.hex.x,-this.hex.y);
+        this.ctx.globalCompositeOperation = 'destination-over';
+		this.hex.drawBlank(this.ctx, 'black', 0, 'black');
+        this.ctx.globalCompositeOperation = 'source-atop';
+		this.ctx.drawImage(this.avatar, this.hex.x, this.hex.y);
+
 		if(this.HP){
 			
 				let bar = this.hex.getLineAtHeight(5);
 				let colorHP = 'rgba(249, 69, 86, 0.4)';
 				let colorMissing = 'rgba(20, 20, 20, 0.4)';
-				
-				bar.drawBar(ctx, colorHP, colorMissing, 5, this.HP.getPercentageFull());
+				bar.drawBar(this.ctx, colorHP, colorMissing, 5, this.HP.getPercentageFull());
 				
 			}
-			
-			
-			
-			
-		ctx.restore();	  
-	  
+
+        this.ctx.restore();
+
 	};
 
 }
@@ -86,7 +99,7 @@ class Hero extends MapObject {
 		let dmgDealt = this.armor[dmg.type] > dmg.amount ? 1 : (dmg.amount - this.armor[dmg.type]);
 		
 		this.HP.value -= dmgDealt;
-		
+		this.needsRedraw=true;
 		if(this.HP.value>0){
 			this.playSound('pain', (dmgDealt/(dmgDealt + this.HP.maxValue)) );
 		} else {
@@ -109,7 +122,6 @@ class Armor {
 		
 	}
 }
-
 
 
 class DynamicValue {

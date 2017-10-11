@@ -1,5 +1,4 @@
-import {DisplacementAnimation, DynamicValue} from './Character.js'
-import {DisappearingText} from './DisappearingText.js'
+import {DisplacementAnimation} from './Character.js'
 
 
 /**
