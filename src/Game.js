@@ -62,9 +62,7 @@ class Game {
 	  }
 	  
 	animateEffects(ctx){
-		  
-		for( let eff of this.effects){
-			  
+		for( let /*Effect*/eff of this.effects){
 			  if(eff.draw(ctx)) //true when effect is over
 			  {
 				  let index = this.effects.indexOf(eff);
@@ -170,16 +168,24 @@ class Game {
 									12, anim, color));						
 	
 	}
-	
-	refreshMovable(){
-		this.grid.markGivenMovable(this.grid.getMovableHexes(this.hero));		
+
+	refreshMovable(/*Array <Hex>*/ movable){
+		this.grid.makeMovable(movable);
+		this.battleView.drawGrid(this.grid);
+	}
+
+	refreshMovableForUnit(/*Hero */ unit){
+        this.refreshMovable(this.grid.getMovableHexes(unit));
 	}
 	
 	issueOrderGo(/*Hex */ hex){
 		if(hex.movable){
-			return this.grid.goTo(hex,this.hero);
+			if(this.grid.goTo(hex,this.hero)){
+                this.heroActive=false;
+                this.scheduleHostilesTurn();
+                this.refreshMovable(null);
+			}
 		}
-		return false;
 	}
 	
 	timestep(ctx){
@@ -193,7 +199,7 @@ class Game {
 		if(!this.heroActive){
 			if(this.executeHostilesTurn()){
 				this.heroActive=true;
-				this.refreshMovable(this.hero);
+				this.refreshMovable(this.grid.getMovableHexes(this.hero));
 			}
 		}		
 				

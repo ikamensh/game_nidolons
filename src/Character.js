@@ -21,10 +21,9 @@ class MapObject {
 		
 	}
 	
-	draw(/* Canvas */ctx){
+	draw(/* Canvas2D */ctx){
 		ctx.save();
-	  //ctx.drawImage(this.avatar, this.x, this.y, this.x + this.avatar.width, this.y + this.avatar.height, this.x, this.y, this.x + HT.Hexagon.Static.WIDTH, this.y + HT.Hexagon.Static.HEIGHT);  
-	  
+
 		if(this.animation){
 			var animationDisplacement = this.animation.calculateAnimDisplacement();
 			if(/*Point */ animationDisplacement){

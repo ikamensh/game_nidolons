@@ -1,11 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import {Grid} from './grid.js'
+import {Grid} from './Grid.js'
 import {Hero} from './Character.js'
 import {Game} from './Game.js'
 import {BottomPanel} from './BottomPanel.js'
-import {SoundEngine} from './SoundEngine.js'
+import {soundEngine} from './SoundEngine.js'
+import {BattleView} from './BattleView.js'
 import {heroParams, ghostParams} from './units/units.js'
 import $ from 'jquery';
 
@@ -44,17 +45,16 @@ let ghostSoundDict = {
 };
 
 
-let canvas = document.getElementById('unitsLayer');
-let ctx = canvas.getContext('2d');
-
-let canvasGrid = document.getElementById('grid');
-let ctxGrid = canvasGrid.getContext('2d');
+let canvasDraw = document.getElementById('drawing');
+let canvasEffects = document.getElementById('effectsLayer');
+let canvasUnits = document.getElementById('unitsLayer');
+let canvasGrid = document.getElementById('gridLayer');
 
 let debugInfo = document.getElementById('debugInfo');
 
 let theGrid = new Grid(960, 500);
-
 let game = new Game(theGrid);
+game.battleView = new BattleView(canvasDraw, canvasGrid, canvasUnits, canvasEffects);
 
 
 let theHero = new Hero(img, heroSoundDict, heroParams);
@@ -71,37 +71,14 @@ game.grid.placeUnit(game.grid.GetHexById("(5,3)"), enemy);
 
 function init() {
   window.requestAnimationFrame(draw);
-  game.refreshMovable(theHero);
+  game.refreshMovableForUnit(theHero);
 }
 
-function draw() {  
+function draw() {
 
-	ctx.globalCompositeOperation = 'destination-over';
-	ctx.clearRect(0, 0, 960, 600);
-	ctxGrid.globalCompositeOperation = 'destination-over';
-	ctxGrid.clearRect(0, 0, 960, 600);
-  
-  //draw hex field
-    for(let hex of game.grid.Hexes) { 
-	  
-		hex.draw(ctx);
-		ctxGrid.drawImage(canvas,0,0);
-		ctx.clearRect(0, 0, 960, 600);   
-  }
-  
-  //draw units
-  for(let obj of game.allObjects)
-  {	  
-		obj.draw(ctx);
-		ctxGrid.drawImage(canvas,0,0);
-		ctx.clearRect(0, 0, 960, 600);  
-  }
-  
-	//also renders effects
-  game.timestep(ctx);  
-  ctxGrid.globalCompositeOperation = 'source-over';
-  ctxGrid.drawImage(canvas,0,0);
-  ctx.clearRect(0, 0, 960, 600);
+    game.battleView.drawUnits(game.allObjects);
+    game.battleView.drawEffects(game);
+
   if(game.reactComponent)
   {
 	  game.reactComponent.update(game.hero, game.selectedUnit);
@@ -109,6 +86,7 @@ function draw() {
   
   window.requestAnimationFrame(draw);
   debugInfo.innerHTML= theHero.x+" "+theHero.y
+
 }
 
 init();
@@ -147,10 +125,11 @@ document.onkeydown = function(evt) {
 		if (evt.keyCode === 68) {
 			hex = game.grid.moveUnitSE(theHero);
 		}
+
 		if(game.grid.goTo(hex, theHero)){
 			game.heroActive=false;
 			game.scheduleHostilesTurn();
-			game.grid.markGivenMovable(null);
+			game.grid.makeMovable(null);
 		}
 	}
 	
@@ -164,38 +143,34 @@ function getMousePos(canvas, evt) {
       y: evt.clientY - rect.top
     };
   }
-  
-  canvasGrid.addEventListener('mousemove', function(evt) {
-    let mousePos = getMousePos(canvasGrid, evt);
-	let aUnit = game.grid.selectHex(mousePos.x, mousePos.y);
+
+canvasDraw.addEventListener('mousemove', function(evt) {
+
+    let mousePos = getMousePos(canvasDraw, evt);
+    let oldHex = game.grid.selectedHex;
+	let hex = game.grid.selectHex(mousePos.x, mousePos.y);
+	if(hex!==oldHex){
+		game.battleView.drawGrid(game.grid);
+	}
+
+	let aUnit = hex ? hex.content : null;
 	if(aUnit && aUnit !== game.hero)
 	{game.selectedUnit = aUnit;}
-    console.log('Found at' + mousePos.x + ',' + mousePos.y +':' +game.selectedUnit);
+
   }, false);
-  
-  canvasGrid.addEventListener('click', function(evt) {
+
+canvasDraw.addEventListener('click', function(evt) {
 	  if(game.heroActive){
-		let mousePos = getMousePos(canvasGrid, evt);
+
+		let mousePos = getMousePos(canvasDraw, evt);
 		game.grid.selectHex(mousePos.x, mousePos.y);
-		
-		if(game.issueOrderGo(game.grid.selectedHex)){
-			game.heroActive=false;
-			game.scheduleHostilesTurn();
-			game.grid.markGivenMovable(null);
-		}
-		
-		  return false;
+		game.issueOrderGo(game.grid.selectedHex);
+
+		return false;
 	  }
 
   }, false);
 
-// ======================================
-
-
-
-
-
-// ========================================
 
 game.reactComponent = ReactDOM.render(
   <BottomPanel unit={game.hero} selectedUnit={game.hero}/>,

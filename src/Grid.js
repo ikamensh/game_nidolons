@@ -81,7 +81,7 @@ class Grid {
         return null;
     };
 
-    markGivenMovable(/*Array<Hexagon> */ movable){
+    makeMovable(/*Array<Hexagon> */ movable){
         for(let hex of this.Hexes){
 
             if(movable && movable.indexOf(hex) !== -1)
@@ -161,7 +161,7 @@ class Grid {
         if(hex)
         {
             hex.selected=true;
-            return hex.content;
+            return hex;
         }
 
     };
