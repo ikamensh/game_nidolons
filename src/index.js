@@ -3,11 +3,11 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import {getMousePos} from "./Utils"
 import {Grid} from './Grid.js'
-import {Hero} from './Character.js'
+import {Hero} from './battle_system/Character.js'
 import {Game} from './Game.js'
-import {BottomPanel} from './BottomPanel.js'
+import {BottomPanel} from './GUI/BottomPanel.js'
 import {soundEngine} from './SoundEngine.js'
-import {BattleView} from './BattleView.js'
+import {BattleView} from './GUI/BattleView.js'
 import {heroParams, ghostParams} from './units/units.js'
 import $ from 'jquery';
 
@@ -96,7 +96,7 @@ canvasDraw.addEventListener('mousemove', function(evt) {
     let mousePos = getMousePos(canvasDraw, evt);
     let oldHex = game.grid.selectedHex;
 	let hex = game.grid.selectHex(mousePos.x, mousePos.y);
-	if(hex!==oldHex){
+	if(hex!=oldHex){
 		game.battleView.drawGrid(game.grid);
 	}
 

@@ -1,4 +1,4 @@
-import {DisplacementAnimation} from './Character.js'
+import {DisplacementAnimation} from './GUI/DisplacementAnimation.js'
 
 
 /**

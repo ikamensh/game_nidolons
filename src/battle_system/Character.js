@@ -1,5 +1,8 @@
-import {soundsEngine} from './SoundEngine';
-import {createCanvas} from "./Utils"
+import {soundsEngine} from '../SoundEngine';
+import {createCanvas} from "../Utils"
+import {Armor} from "./Armor";
+import {Damage} from "./Damage";
+import {DynamicValue} from "./DynamicValue";
 
 class MapObject { 
 	
@@ -69,15 +72,6 @@ class MapObject {
 }
 
 
-class ParamsDict {
-    constructor(name, HP, dmg, armor){
-        this.name = name;
-        this.HP = HP;
-        this.dmg = dmg;
-        this.armor = armor;
-    }
-}
-
 class Hero extends MapObject {
 	
 	constructor( /*Image*/ avatarImage, /* txt_id -> Sound */ soundsDict, /*ParamsDict*/ params)
@@ -114,74 +108,6 @@ class Hero extends MapObject {
 }
 
 
-class Armor {
-	constructor(/*Int*/ slash, /*Int*/ pierce, /*Int*/ magic){
-		this.SLASH = slash;
-		this.PIERCE = pierce;
-		this.MAGIC = magic;
-		
-	}
-}
 
 
-class DynamicValue {
-	
-	constructor(/*int */ maxValue){		
-		
-		this.maxValue=maxValue;
-		this.value=maxValue;
-		
-	}
-	
-	getPercentageFull() {
-		return this.value/this.maxValue;
-	}
-	
-}
-
-const DamageType = Object.freeze({
-	
-	SLASH : "SLASH",
-	PIERCE: "PIERCE",
-	MAGIC: 	"MAGIC"	
-	
-});
-
-class Damage{
-	constructor(/*Int*/ amount, /*DamageType*/ type){
-		this.type = type;
-		this.amount=amount;		
-	}	
-}
-
-class DisplacementAnimation{
-	constructor( /* displacement point*/ dP, /*int*/ duration, /*boolean*/ inverted){		
-		this.dP = dP;
-		//inverted animation will go from current position to the given point(relative);
-        //non-inverted will go from the given point to current position.
-		this.inverted=inverted;
-		this.duration = duration;
-		this.durationInitial = duration;			
-	}
-
-	//returns x,y vector according to current displacement
-	calculateAnimDisplacement(){
-		if(this.duration>0){
-			if(this.inverted){
-				this.duration-=1;
-				return {
-					x: this.dP.x*(1-this.duration/this.durationInitial),
-					y: this.dP.y*(1-this.duration/this.durationInitial)
-				};
-			} else {
-				this.duration-=1;
-				return {
-					x: this.dP.x*(this.duration/this.durationInitial),
-					y: this.dP.y*(this.duration/this.durationInitial)
-				};
-			}
-		}	
-	}
-}
-
-export {Hero, DynamicValue, DisplacementAnimation, Damage, DamageType, Armor, ParamsDict};
+export {Hero};

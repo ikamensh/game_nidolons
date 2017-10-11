@@ -14,9 +14,9 @@ class ArmorDisplay extends React.Component {
 	render(){
 		return(
 		<div className="armor">
-			<AttributeDisplay img={require('./icons/icon1.png')} num={this.props.armor.SLASH} />
-			<AttributeDisplay img={require('./icons/icon2.ico')} num={this.props.armor.PIERCE} />
-			<AttributeDisplay img={require('./icons/icon3.png')} num={this.props.armor.MAGIC} />			
+			<AttributeDisplay img={require('../icons/icon1.png')} num={this.props.armor.SLASH} />
+			<AttributeDisplay img={require('../icons/icon2.ico')} num={this.props.armor.PIERCE} />
+			<AttributeDisplay img={require('../icons/icon3.png')} num={this.props.armor.MAGIC} />
         </div>
 		);
 	}
@@ -26,7 +26,7 @@ class DamageDisplay extends React.Component {
 	render(){
 		return(
 		<div className="damage">
-			<AttributeDisplay img={require('./icons/icon_dmg.ico')}	num={this.props.damage.amount} />					
+			<AttributeDisplay img={require('../icons/icon_dmg.ico')} num={this.props.damage.amount} />
         </div>
 		);
 	}
@@ -58,7 +58,7 @@ class UnitStats extends React.Component {
 			return(			
 			<div className="unit_view">
 			<div className="inner_unit_view">
-					<UnitFace img = {require('./res/tr_128.png')} 
+					<UnitFace img = {require('../res/tr_128.png')}
 					name = {this.props.unit.name}
 					HP = {this.props.unit.HP}/>
 					<DamageDisplay damage={this.props.unit.meleeDamage}/>

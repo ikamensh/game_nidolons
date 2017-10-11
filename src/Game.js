@@ -1,6 +1,7 @@
-import {DisplacementAnimation, DynamicValue} from './Character.js'
-import {DisappearingText} from './DisappearingText.js'
-import {AI} from "./AI"
+import {DynamicValue} from './battle_system/DynamicValue.js'
+import {DisappearingText} from './GUI/DisappearingText.js'
+import {AI} from "./battle_system/AI"
+import {DisplacementAnimation} from "./GUI/DisplacementAnimation";
 
 
 class Game { 

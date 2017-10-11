@@ -1,4 +1,6 @@
-import {ParamsDict, DamageType, Damage} from '../Character.js'
+import {Damage} from '../battle_system/Damage.js'
+import {ParamsDict} from "./ParamsDict";
+import {DamageType} from "../battle_system/Damage";
 
 var heroParams = new ParamsDict("Helene",30, 
 								new Damage(6,DamageType.SLASH), 
