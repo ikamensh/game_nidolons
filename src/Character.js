@@ -139,7 +139,7 @@ class DynamicValue {
 	
 }
 
-var DamageType = Object.freeze({
+const DamageType = Object.freeze({
 	
 	SLASH : "SLASH",
 	PIERCE: "PIERCE",

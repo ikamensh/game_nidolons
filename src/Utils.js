@@ -6,4 +6,12 @@ function createCanvas(width, height) {
 }
 
 
-export {createCanvas}
+function getMousePos(canvas, evt) {
+    let rect = canvas.getBoundingClientRect();
+    return {
+        x: evt.clientX - rect.left,
+        y: evt.clientY - rect.top
+    };
+}
+
+export {createCanvas, getMousePos}

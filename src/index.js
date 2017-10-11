@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import {getMousePos} from "./Utils"
 import {Grid} from './Grid.js'
 import {Hero} from './Character.js'
 import {Game} from './Game.js'
@@ -69,6 +70,12 @@ enemy = new Hero(img1, ghostSoundDict, ghostParams);
 game.addHostile(enemy);
 game.grid.placeUnit(game.grid.GetHexById("(5,3)"), enemy);
 
+game.reactComponent = ReactDOM.render(
+	<BottomPanel unit={game.hero} selectedUnit={game.hero}/>,
+    document.getElementById('bottom-panel')
+);
+
+
 function init() {
   window.requestAnimationFrame(draw);
   game.refreshMovableForUnit(theHero);
@@ -76,74 +83,14 @@ function init() {
 
 function draw() {
 
-    game.battleView.drawUnits(game.allObjects);
-    game.battleView.drawEffects(game);
-
-  if(game.reactComponent)
-  {
-	  game.reactComponent.update(game.hero, game.selectedUnit);
-  }
-  
-  window.requestAnimationFrame(draw);
-  debugInfo.innerHTML= theHero.x+" "+theHero.y
+    game.timestep();
+  	window.requestAnimationFrame(draw);
 
 }
 
 init();
 
-document.onkeydown = function(evt) {
-	if(game.heroActive){
-		evt = evt || window.event;
-		
-		let hex = null;
-		//q
-		if (evt.keyCode === 81) {
-			hex = game.grid.moveUnitNW(theHero);		
-		}
-		
-		//w
-		if (evt.keyCode === 87) {
-			hex = game.grid.moveUnitN(theHero);
-		}
-		
-		//e
-		if (evt.keyCode === 69) {
-			hex = game.grid.moveUnitNE(theHero);	
-		}
-		
-		//a
-		if (evt.keyCode === 65) {
-			hex = game.grid.moveUnitSW(theHero);
-		}
-		
-		//s
-		if (evt.keyCode === 83) {
-			hex = game.grid.moveUnitS(theHero);
-		}
-		
-		//d
-		if (evt.keyCode === 68) {
-			hex = game.grid.moveUnitSE(theHero);
-		}
-
-		if(game.grid.goTo(hex, theHero)){
-			game.heroActive=false;
-			game.scheduleHostilesTurn();
-			game.grid.makeMovable(null);
-		}
-	}
-	
-};
-
-
-function getMousePos(canvas, evt) {
-    let rect = canvas.getBoundingClientRect();
-    return {
-      x: evt.clientX - rect.left,
-      y: evt.clientY - rect.top
-    };
-  }
-
+//selecting hexes and units to view
 canvasDraw.addEventListener('mousemove', function(evt) {
 
     let mousePos = getMousePos(canvasDraw, evt);
@@ -159,6 +106,7 @@ canvasDraw.addEventListener('mousemove', function(evt) {
 
   }, false);
 
+//left mouse click: move, attack
 canvasDraw.addEventListener('click', function(evt) {
 	  if(game.heroActive){
 
@@ -172,10 +120,51 @@ canvasDraw.addEventListener('click', function(evt) {
   }, false);
 
 
-game.reactComponent = ReactDOM.render(
-  <BottomPanel unit={game.hero} selectedUnit={game.hero}/>,
-  document.getElementById('bottom-panel')
-);
+//key bindings to movement
+document.onkeydown = function(evt) {
+    if(game.heroActive){
+        evt = evt || window.event;
+
+        let hex = null;
+
+        //q
+        if (evt.keyCode === 81) {
+            hex = game.grid.moveUnitNW(theHero);
+        }
+
+        //w
+        if (evt.keyCode === 87) {
+            hex = game.grid.moveUnitN(theHero);
+        }
+
+        //e
+        if (evt.keyCode === 69) {
+            hex = game.grid.moveUnitNE(theHero);
+        }
+
+        //a
+        if (evt.keyCode === 65) {
+            hex = game.grid.moveUnitSW(theHero);
+        }
+
+        //s
+        if (evt.keyCode === 83) {
+            hex = game.grid.moveUnitS(theHero);
+        }
+
+        //d
+        if (evt.keyCode === 68) {
+            hex = game.grid.moveUnitSE(theHero);
+        }
+
+        if(game.grid.goTo(hex, theHero)){
+            game.heroActive=false;
+            game.scheduleHostilesTurn();
+            game.grid.makeMovable(null);
+        }
+    }
+
+};
 
 
 

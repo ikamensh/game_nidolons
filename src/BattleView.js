@@ -43,12 +43,25 @@ class BattleView{
 
     }
 
-    drawEffects(game){
+    drawEffects(effects){
         //also renders effects
         this.ctxDraw.clearRect(0, 0, 960, 600);
-        game.timestep(this.ctxDraw); //TODO does it belong here?
+        let newEffects = this.animateEffects(effects, this.ctxDraw);
         this.ctxEffects.clearRect(0, 0, 960, 600);
         this.ctxEffects.drawImage(this.canvasDraw,0,0);
+        return newEffects;
+    }
+
+
+    animateEffects(effects, ctx){
+        for( let /*Effect*/eff of effects){
+            if(eff.draw(ctx)) //true when effect is over
+            {
+                let index = effects.indexOf(eff);
+                effects.splice(index, 1);
+            }
+        }
+        return effects;
     }
 
 

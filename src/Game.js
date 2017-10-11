@@ -61,15 +61,7 @@ class Game {
 		  this.effects.push(effect);
 	  }
 	  
-	animateEffects(ctx){
-		for( let /*Effect*/eff of this.effects){
-			  if(eff.draw(ctx)) //true when effect is over
-			  {
-				  let index = this.effects.indexOf(eff);
-				  this.effects.splice(index, 1);
-			  }			  
-		}	  
-	}
+
 	  
 	scheduleHostilesTurn(){
 		  
@@ -188,9 +180,18 @@ class Game {
 		}
 	}
 	
-	timestep(ctx){
-		
-		this.animateEffects(ctx);
+	timestep(){
+
+
+
+        this.battleView.drawUnits(this.allObjects);
+        this.effects = this.battleView.drawEffects(this.effects);
+
+        if(this.reactComponent)
+        {
+            this.reactComponent.update(this.hero, this.selectedUnit);
+        }
+
 		if(this.animationPause>0){
 			this.animationPause--;
 			return;
