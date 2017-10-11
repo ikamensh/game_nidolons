@@ -1,5 +1,6 @@
 import {DisplacementAnimation, DynamicValue} from './Character.js'
 import {DisappearingText} from './DisappearingText.js'
+import {AI} from "./AI"
 
 
 class Game { 
@@ -79,7 +80,10 @@ class Game {
 		for( let unit of this.hostileUnits){
 			  if(!unit.madeHisTurn)
 			  {
-				  this.pursueAndFight(unit);
+				  let hex = AI.pursueAndFight(unit, this.grid, this.hero);
+                  if(hex){
+                      this.grid.goTo(hex, unit);
+                  }
 				  unit.madeHisTurn=true;
 				  return false;
 			  }
@@ -89,60 +93,7 @@ class Game {
 		  
 	}
 	
-	wonderingFightBack(/*Unit*/ unit){
-		
-		/*Hex[]*/ let possibleMoves = this.grid.getMovableHexes(unit);			  
-			  
-			  if(possibleMoves.length)	{	
 
-			  //If hero is near, most likely attack!
-				for( let hex of possibleMoves){
-					  if(hex.content === this.hero){
-						  if(Math.random() > 0.36){
-							  this.grid.goTo(hex, unit);
-							  return;
-						  }
-					  }				  
-				  }
-				  
-				  //maybe do nothing?
-				 if(Math.random() >0.50){ 
-				 return;
-				 } 
-			  
-			  //else lets get rolling
-				let randomMove = possibleMoves[Math.floor(Math.random()*possibleMoves.length)];
-				if(randomMove.content && this.hostileUnits.indexOf(randomMove.content)!==-1){
-							 //maybe do nothing?
-						 if(Math.random() >0.50){ 
-							return;
-						 }
-						 //lets give him a chance, or else!
-							randomMove = possibleMoves[Math.floor(Math.random()*possibleMoves.length)];
-							
-				}
-				this.grid.goTo(randomMove, unit);			  
-			}		
-	}
-	
-	pursueAndFight(/*Unit*/ unit){
-		/*Hex[]*/ let possibleMoves = this.grid.getMovableHexes(unit);			  
-			  
-			  if(possibleMoves.length)	{
-					let closestToTarget = possibleMoves[0];
-					let distToTarget = 	this.grid.GetHexDistance(closestToTarget,this.hero.hex)	;
-					for( let hex of possibleMoves){
-						  if(this.grid.GetHexDistance(hex,this.hero.hex)< distToTarget) {
-							  
-							  distToTarget = this.grid.GetHexDistance(hex,this.hero.hex);
-							  closestToTarget = hex;							  
-						  }				  
-					}
-					
-					this.grid.goTo(closestToTarget, unit);			  
-				  
-			  }		
-	}
 		 
 	
 	processAttack(/*Unit */ attacker, /*Unit */ recipient){
