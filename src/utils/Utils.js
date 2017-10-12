@@ -14,4 +14,11 @@ function getMousePos(canvas, evt) {
     };
 }
 
-export {createCanvas, getMousePos}
+function createAudio(/*String*/ filepath){
+    let audio = document.createElement('audio');
+    audio.src = filepath;
+    return audio;
+}
+
+
+export {createCanvas, getMousePos, createAudio}

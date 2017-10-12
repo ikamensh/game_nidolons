@@ -1,15 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import {getMousePos} from "./Utils"
-import {Grid} from './Grid.js'
-import {Hero} from './battle_system/Character.js'
+import {getMousePos} from "./utils/Utils"
+import {Grid} from './battle_system/Grid.js'
+import {Unit} from './battle_system/Character.js'
 import {Game} from './Game.js'
 import {BottomPanel} from './GUI/BottomPanel.js'
-import {soundEngine} from './SoundEngine.js'
+import {soundEngine} from './utils/SoundEngine.js'
 import {BattleView} from './GUI/BattleView.js'
 import {heroParams, ghostParams} from './units/units.js'
 import $ from 'jquery';
+import {createSoundDict} from "./units/units"
 
 
 // export for others scripts to use
@@ -18,32 +19,17 @@ window.$ = $;
 let img = document.getElementById('theHeroImg');
 let img1 = document.getElementById('enemy');
 
+let pathhero = "hero";
+let pathghost = "ghost";
 
-let hero_move = document.getElementById("hero_move");
-let hero_attack = document.getElementById("hero_attack");
-let hero_pain = document.getElementById("hero_pain");
-let hero_death = document.getElementById("hero_death");
 
-let ghost_move = document.getElementById("ghost_move");
-let ghost_attack = document.getElementById("ghost_attack");
-let ghost_pain = document.getElementById("ghost_pain");
-let ghost_death = document.getElementById("ghost_death");
+
+
 
 let soundStep = document.getElementById("step");
 
-let heroSoundDict = {
-	attack: hero_attack,
-	move: hero_move,
-	pain: hero_pain,
-	death: hero_death
-};
-
-let ghostSoundDict = {
-	attack: ghost_attack,
-	move: ghost_move,
-	pain: ghost_pain,
-	death: ghost_death
-};
+let heroSoundDict = createSoundDict(pathhero);
+let ghostSoundDict = createSoundDict(pathghost);
 
 
 let canvasDraw = document.getElementById('drawing');
@@ -58,71 +44,75 @@ let game = new Game(theGrid);
 game.battleView = new BattleView(canvasDraw, canvasGrid, canvasUnits, canvasEffects);
 
 
-let theHero = new Hero(img, heroSoundDict, heroParams);
+let theHero = new Unit(img, heroSoundDict, heroParams);
 game.grid.placeUnit(game.grid.GetHexById("(2,4)"), theHero);
 game.setHero(theHero);
 
-let enemy = new Hero(img1, ghostSoundDict, ghostParams);
+let enemy = new Unit(img1, ghostSoundDict, ghostParams);
 game.addHostile(enemy);
 game.grid.placeUnit(game.grid.GetHexById("(5,5)"), enemy);
 
-enemy = new Hero(img1, ghostSoundDict, ghostParams);
+enemy = new Unit(img1, ghostSoundDict, ghostParams);
 game.addHostile(enemy);
 game.grid.placeUnit(game.grid.GetHexById("(5,3)"), enemy);
 
 game.reactComponent = ReactDOM.render(
-	<BottomPanel unit={game.hero} selectedUnit={game.hero}/>,
+    <BottomPanel unit={game.hero} selectedUnit={game.hero}/>,
     document.getElementById('bottom-panel')
 );
 
 
 function init() {
-  window.requestAnimationFrame(draw);
-  game.refreshMovableForUnit(theHero);
+    window.requestAnimationFrame(draw);
+    game.refreshMovableForUnit(theHero);
 }
 
 function draw() {
 
     game.timestep();
-  	window.requestAnimationFrame(draw);
+    window.requestAnimationFrame(draw);
+    debugInfo.innerHTML = canvasGrid.getContext('2d').strokeStyle;
+    debugInfo.innerHTML += '\n';
+    debugInfo.innerHTML += canvasGrid.getContext('2d').lineWidth;
 
 }
 
 init();
 
 //selecting hexes and units to view
-canvasDraw.addEventListener('mousemove', function(evt) {
+canvasDraw.addEventListener('mousemove', function (evt) {
 
     let mousePos = getMousePos(canvasDraw, evt);
     let oldHex = game.grid.selectedHex;
-	let hex = game.grid.selectHex(mousePos.x, mousePos.y);
-	if(hex!=oldHex){
-		game.battleView.drawGrid(game.grid);
-	}
+    let hex = game.grid.selectHex(mousePos.x, mousePos.y);
+    if (hex != oldHex) {
+        game.battleView.drawGrid(game.grid);
+    }
 
-	let aUnit = hex ? hex.content : null;
-	if(aUnit && aUnit !== game.hero)
-	{game.selectedUnit = aUnit;}
+    let aUnit = hex ? hex.content : null;
+    if (aUnit && aUnit !== game.hero) {
+        game.selectedUnit = aUnit;
+    }
 
-  }, false);
+}, false);
 
 //left mouse click: move, attack
-canvasDraw.addEventListener('click', function(evt) {
-	  if(game.heroActive){
+canvasDraw.addEventListener('click', function (evt) {
+    if (game.heroActive) {
 
-		let mousePos = getMousePos(canvasDraw, evt);
-		game.grid.selectHex(mousePos.x, mousePos.y);
-		game.issueOrderGo(game.grid.selectedHex);
+        let mousePos = getMousePos(canvasDraw, evt);
+        game.grid.selectHex(mousePos.x, mousePos.y);
+        game.issueOrderGo(game.grid.selectedHex);
 
-		return false;
-	  }
+        return false;
+    }
 
-  }, false);
+}, false);
 
 
 //key bindings to movement
-document.onkeydown = function(evt) {
-    if(game.heroActive){
+document.onkeydown = function (evt) {
+    if (game.heroActive) {
         evt = evt || window.event;
 
         let hex = null;
@@ -157,8 +147,8 @@ document.onkeydown = function(evt) {
             hex = game.grid.moveUnitSE(theHero);
         }
 
-        if(game.grid.goTo(hex, theHero)){
-            game.heroActive=false;
+        if (game.grid.goTo(hex, theHero)) {
+            game.heroActive = false;
             game.scheduleHostilesTurn();
             game.grid.makeMovable(null);
         }

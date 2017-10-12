@@ -12,6 +12,7 @@ class BattleView{
         this.ctxGrid.globalCompositeOperation = 'destination-over';
         this.ctxUnits.globalCompositeOperation = 'destination-over';
         this.ctxEffects.globalCompositeOperation = 'source-over';
+
     }
 
     drawGrid(/*Grid*/ grid){

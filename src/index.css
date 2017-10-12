@@ -38,6 +38,12 @@ canvas {
 	
 }
 
+#debugInfo{
+	position: absolute;
+	width:250px;
+	right: 50px;
+}
+
 
 .unit_view {	
 	border: 3px dashed #ccc;

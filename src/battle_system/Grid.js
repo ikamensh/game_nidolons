@@ -1,4 +1,4 @@
-import {DisplacementAnimation} from './GUI/DisplacementAnimation.js'
+import {DisplacementAnimation} from '../GUI/DisplacementAnimation.js'
 
 
 /**
@@ -110,9 +110,9 @@ class Grid {
         {
             if(hex.content)
             {
-                unit.playSound('attack', Math.min(1, unit.meleeDamage.amount/hex.content.HP.value));
+
                 this.game.processAttack(unit,hex.content);
-                unit.animation = new DisplacementAnimation( new Point( (hex.x-unit.hex.x)/4, (hex.y-unit.hex.y)/4), 12, false);
+
                 this.game.animationPause=11;
 
             } else {

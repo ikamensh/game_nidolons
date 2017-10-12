@@ -3,7 +3,11 @@ import {DisappearingText} from './GUI/DisappearingText.js'
 import {AI} from "./battle_system/AI"
 import {DisplacementAnimation} from "./GUI/DisplacementAnimation";
 
+/*
+Game is the highest level abstraction of the battlefield and everything happening on it - graphics, sounds and combat logic.
+Before special graphics and sound classes are created, those belong here.
 
+ */
 class Game { 
 	
 	constructor( grid ) {		
@@ -75,7 +79,7 @@ class Game {
 		  
 	}
 	
-	//return: boolean: all done?
+	//return: boolean: all hostiles made their turn
 	executeHostilesTurn(){
 		  
 		for( let unit of this.hostileUnits){
@@ -98,9 +102,13 @@ class Game {
 		 
 	
 	processAttack(/*Unit */ attacker, /*Unit */ recipient){
-		
+
+        attacker.animation = new DisplacementAnimation( /*Point*/ { x:(attacker.hex.x-recipient.hex.x)/4, y: (attacker.y-recipient.hex.y)/4}, 12, false);
+        attacker.playSound('attack', Math.min(1, attacker.meleeDamage.amount/recipient.HP.value));
 		let recipientHex = recipient.hex;
 		let dmg = recipient.recieveDamage(attacker.dealDamage());
+
+
 		
 		let color = {R:255, G:120, B:120};
 		let anim = new DisplacementAnimation( {x: recipientHex.x-attacker.hex.x, y: recipientHex.y-attacker.hex.y}, 105, true);
@@ -118,7 +126,7 @@ class Game {
 		this.battleView.drawGrid(this.grid);
 	}
 
-	refreshMovableForUnit(/*Hero */ unit){
+	refreshMovableForUnit(/*Unit */ unit){
         this.refreshMovable(this.grid.getMovableHexes(unit));
 	}
 	
@@ -135,24 +143,25 @@ class Game {
 	timestep(){
 
 
-
-        this.battleView.drawUnits(this.allObjects);
+        //TODO this.battleView.drawGrid(this.grid); - stops grid flickering! - but is unnecessary and costly!
+        //this.battleView.drawGrid(this.grid); //remnants of the war of the days past
         this.effects = this.battleView.drawEffects(this.effects);
+
 
         if(this.reactComponent)
         {
             this.reactComponent.update(this.hero, this.selectedUnit);
         }
 
-		if(this.animationPause>0){
+		if(this.animationPause>=0){
+
+            this.battleView.drawUnits(this.allObjects);
 			this.animationPause--;
-			return;
-		}
-		
-		if(!this.heroActive){
+
+		} else if(!this.heroActive){
 			if(this.executeHostilesTurn()){
 				this.heroActive=true;
-				this.refreshMovable(this.grid.getMovableHexes(this.hero));
+				this.refreshMovableForUnit((this.hero));
 			}
 		}		
 				

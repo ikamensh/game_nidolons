@@ -1,8 +1,9 @@
-import {soundsEngine} from '../SoundEngine';
-import {createCanvas} from "../Utils"
+import {soundsEngine} from '../utils/SoundEngine';
+import {createCanvas} from "../utils/Utils"
 import {Armor} from "./Armor";
 import {Damage} from "./Damage";
 import {DynamicValue} from "./DynamicValue";
+import {DisplacementAnimation} from "../GUI/DisplacementAnimation"
 
 class MapObject { 
 	
@@ -72,7 +73,7 @@ class MapObject {
 }
 
 
-class Hero extends MapObject {
+class Unit extends MapObject {
 	
 	constructor( /*Image*/ avatarImage, /* txt_id -> Sound */ soundsDict, /*ParamsDict*/ params)
 	{
@@ -85,7 +86,8 @@ class Hero extends MapObject {
 	}
 	
 	dealDamage(){
-		return this.meleeDamage;
+
+        return this.meleeDamage;
 	}
 	
 	recieveDamage(/*Damage*/ dmg) {
@@ -110,4 +112,4 @@ class Hero extends MapObject {
 
 
 
-export {Hero};
+export {Unit};
