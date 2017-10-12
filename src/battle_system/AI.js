@@ -8,7 +8,7 @@ class AI {
 
         if (possibleMoves.length) {
 
-            //If hero is near, most likely attack!
+            //If Helene is near, most likely attack!
             for (let hex of possibleMoves) {
                 if (hex.content === theHero) {
                     if (Math.random() > 0.36) {

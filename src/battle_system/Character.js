@@ -4,6 +4,7 @@ import {Armor} from "./Armor";
 import {Damage} from "./Damage";
 import {DynamicValue} from "./DynamicValue";
 import {DisplacementAnimation} from "../GUI/DisplacementAnimation"
+import {createSoundDict} from "../units/units"
 
 class MapObject { 
 	
@@ -75,8 +76,9 @@ class MapObject {
 
 class Unit extends MapObject {
 	
-	constructor( /*Image*/ avatarImage, /* txt_id -> Sound */ soundsDict, /*ParamsDict*/ params)
+	constructor( /*Image*/ avatarImage, /*ParamsDict*/ params)
 	{
+		let soundsDict = createSoundDict(params.name);
 		super(avatarImage, soundsDict);
 		this.name = params.name;
 		this.HP = new DynamicValue(params.HP);

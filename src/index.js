@@ -19,17 +19,6 @@ window.$ = $;
 let img = document.getElementById('theHeroImg');
 let img1 = document.getElementById('enemy');
 
-let pathhero = "hero";
-let pathghost = "ghost";
-
-
-
-
-
-let soundStep = document.getElementById("step");
-
-let heroSoundDict = createSoundDict(pathhero);
-let ghostSoundDict = createSoundDict(pathghost);
 
 
 let canvasDraw = document.getElementById('drawing');
@@ -44,15 +33,15 @@ let game = new Game(theGrid);
 game.battleView = new BattleView(canvasDraw, canvasGrid, canvasUnits, canvasEffects);
 
 
-let theHero = new Unit(img, heroSoundDict, heroParams);
+let theHero = new Unit(img, heroParams);
 game.grid.placeUnit(game.grid.GetHexById("(2,4)"), theHero);
 game.setHero(theHero);
 
-let enemy = new Unit(img1, ghostSoundDict, ghostParams);
+let enemy = new Unit(img1, ghostParams);
 game.addHostile(enemy);
 game.grid.placeUnit(game.grid.GetHexById("(5,5)"), enemy);
 
-enemy = new Unit(img1, ghostSoundDict, ghostParams);
+enemy = new Unit(img1, ghostParams);
 game.addHostile(enemy);
 game.grid.placeUnit(game.grid.GetHexById("(5,3)"), enemy);
 
