@@ -13,7 +13,7 @@ class MapObject {
 		this.x=0
 		this.y=0
 		this.avatar = avatarImage;
-		this.hex = "not_placed_yet";
+		this.hex = null;
 		this.soundsDict = soundsDict;
 		this.canvas = createCanvas(128,128);
 		this.ctx=this.canvas.getContext('2d');
@@ -60,12 +60,21 @@ class MapObject {
 
 		if(this.HP){
 			
-				let bar = this.hex.getLineAtHeight(5);
+				let bar = this.hex.getLineAtHeight(7);
 				let colorHP = 'rgba(249, 69, 86, 0.4)';
 				let colorMissing = 'rgba(20, 20, 20, 0.4)';
 				bar.drawBar(this.ctx, colorHP, colorMissing, 5, this.HP.getPercentageFull());
 				
 			}
+
+        if(this.mana){
+
+            let bar = this.hex.getLineAtHeight(3);
+            let colorMana = 'rgba(120, 79, 231, 0.4)';
+            let colorMissing = 'rgba(20, 20, 20, 0.4)';
+            bar.drawBar(this.ctx, colorMana, colorMissing, 5, this.mana.getPercentageFull());
+
+        }
 
         this.ctx.restore();
 
@@ -82,6 +91,11 @@ class Unit extends MapObject {
 		super(avatarImage, soundsDict);
 		this.name = params.name;
 		this.HP = new DynamicValue(params.HP);
+		if(params.mana) {
+            this.mana = new DynamicValue(params.mana);
+            this.abilities = params.abilities;
+        }
+
 		this.meleeDamage = new Damage(params.dmg.amount, params.dmg.type); 
 		this.armor = new Armor(params.armor[0],params.armor[1],params.armor[2]) ;
 		

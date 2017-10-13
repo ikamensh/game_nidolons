@@ -6,6 +6,7 @@ class DisplacementAnimation {
         this.inverted = inverted;
         this.duration = duration;
         this.durationInitial = duration;
+
     }
 
     //returns x,y vector according to current displacement
@@ -28,4 +29,24 @@ class DisplacementAnimation {
     }
 }
 
-export {DisplacementAnimation};
+class DelayedDisplacementAnimation extends DisplacementAnimation {
+    constructor(/* displacement point*/ dP, /*int*/ duration, /*boolean*/ inverted, /*int*/ delay){
+        super(dP,duration,inverted);
+        this.delay=delay;
+
+    }
+
+    calculateAnimDisplacement(){
+        if(this.delay>0){
+            this.delay--;
+            return {
+                x: 0,
+                y: 0
+            }
+        } else {
+        return super.calculateAnimDisplacement()
+        }
+    }
+}
+
+export {DisplacementAnimation, DelayedDisplacementAnimation};

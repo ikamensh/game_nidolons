@@ -34,16 +34,16 @@ game.battleView = new BattleView(canvasDraw, canvasGrid, canvasUnits, canvasEffe
 
 
 let theHero = new Unit(img, heroParams);
-game.grid.placeUnit(game.grid.GetHexById("(2,4)"), theHero);
+game.grid.placeUnit(game.grid.getHexById("(2,4)"), theHero);
 game.setHero(theHero);
 
 let enemy = new Unit(img1, ghostParams);
 game.addHostile(enemy);
-game.grid.placeUnit(game.grid.GetHexById("(5,5)"), enemy);
+game.grid.placeUnit(game.grid.getHexById("(5,5)"), enemy);
 
 enemy = new Unit(img1, ghostParams);
 game.addHostile(enemy);
-game.grid.placeUnit(game.grid.GetHexById("(5,3)"), enemy);
+game.grid.placeUnit(game.grid.getHexById("(5,3)"), enemy);
 
 game.reactComponent = ReactDOM.render(
     <BottomPanel unit={game.hero} selectedUnit={game.hero}/>,

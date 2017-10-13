@@ -1,7 +1,7 @@
 import {DynamicValue} from './battle_system/DynamicValue.js'
 import {DisappearingText} from './GUI/DisappearingText.js'
 import {AI} from "./battle_system/AI"
-import {DisplacementAnimation} from "./GUI/DisplacementAnimation";
+import {DisplacementAnimation, DelayedDisplacementAnimation} from "./GUI/DisplacementAnimation";
 
 /*
 Game is the highest level abstraction of the battlefield and everything happening on it - graphics, sounds and combat logic.
@@ -103,23 +103,62 @@ class Game {
 	
 	processAttack(/*Unit */ attacker, /*Unit */ recipient){
 
-        attacker.animation = new DisplacementAnimation( /*Point*/ { x:(attacker.hex.x-recipient.hex.x)/4, y: (attacker.y-recipient.hex.y)/4}, 12, false);
-        attacker.playSound('attack', Math.min(1, attacker.meleeDamage.amount/recipient.HP.value));
-		let recipientHex = recipient.hex;
-		let dmg = recipient.recieveDamage(attacker.dealDamage());
+        let recipientHex = recipient.hex;
+        let attackerHex = attacker.hex;
 
-
-		
-		let color = {R:255, G:120, B:120};
-		let anim = new DisplacementAnimation( {x: recipientHex.x-attacker.hex.x, y: recipientHex.y-attacker.hex.y}, 105, true);
-		this.addEffect(
-			new DisappearingText(dmg,
-									recipientHex.MidPoint.x+32, 
-									recipientHex.MidPoint.y-32, 
-									60, new DynamicValue(45), 
-									12, anim, color));						
+        attacker.animation = new DisplacementAnimation( /*Point*/ { x:(recipientHex.x-attackerHex.x)/4, y: (recipientHex.y-attackerHex.y)/4}, 12, false);
+		let dmgDealt = this.processDamage(attacker.dealDamage(), attackerHex, recipient);
+        attacker.playSound('attack', Math.min(1, dmgDealt/recipient.HP.maxValue));
 	
 	}
+
+	processDamage(/*Damage */ dmg, /*hex*/ comingFrom, /*Unit*/ target) {
+
+        let recipientHex = target.hex;
+        let dmgDealt = target.recieveDamage(dmg);
+        if (dmgDealt / target.HP.maxValue>0.4) {
+			target.playSound('pain', Math.min(1, dmgDealt/target.HP.maxValue))
+			target.animation = new DelayedDisplacementAnimation(/*Point*/ {
+				x: (recipientHex.x - comingFrom.x) / 6,
+				y: (recipientHex.y - comingFrom.y) / 6
+			}, 14, false, 10);
+    	}
+
+        let color = {R:255, G:120, B:120};
+        let anim = new DisplacementAnimation( {x: recipientHex.x-comingFrom.x, y: recipientHex.y-comingFrom.y}, 105, true);
+        this.addEffect(
+            new DisappearingText(dmgDealt,
+                recipientHex.MidPoint.x+32,
+                recipientHex.MidPoint.y-32,
+                60, new DynamicValue(45),
+                12, anim, color));
+
+        return dmgDealt;
+
+	}
+
+	checkTargetedAbility(/* AbilityDealDmg*/ ability, /*Unit*/ source, /*Unit*/ target){
+		if(source.mana < ability.manacost){
+			return false;
+		} else if(this.grid.getHexDistance(source.hex, target.hex) > ability.range) {
+			return false;
+		}
+		return true;
+	}
+
+	processTargetDamageAbility(/* AbilityDealDmg*/ ability, /*Unit*/ source, /*Unit*/ target){
+		source.mana -= ability.manacost;
+		this.processDamage(ability.dmg, source.hex, target);
+
+	}
+
+	issueOrderUseTargetUnitAbility(/*Unit*/ user, /*Ability*/ ability, /*Unit*/ target){
+		if(this.checkTargetedAbility(ability, user, target)){
+			this.processTargetDamageAbility(ability, user, target);
+		}
+	}
+
+
 
 	refreshMovable(/*Array <Hex>*/ movable){
 		this.grid.makeMovable(movable);

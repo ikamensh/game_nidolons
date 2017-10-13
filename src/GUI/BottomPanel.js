@@ -1,4 +1,5 @@
 import React from 'react';
+import {AbilitiesPanel} from "./AbilitiesPanel"
 
 class AttributeDisplay extends React.Component {
 		render() {
@@ -96,9 +97,10 @@ class BottomPanel extends React.Component {
 	
   render() {
 		return ( 
-		  <div className="units_view_in_pb">
-			<UnitStats unit={this.state.unit}/>
-			<UnitStats unit={this.state.selectedUnit}/>
+			<div className="units_view_in_pb">
+				<AbilitiesPanel unit={this.state.unit}/>
+				<UnitStats unit={this.state.unit}/>
+				<UnitStats unit={this.state.selectedUnit}/>
 		  </div>
 	  );
   }

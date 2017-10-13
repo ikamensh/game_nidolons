@@ -45,11 +45,11 @@ class AI {
 
         if (possibleMoves.length) {
             let closestToTarget = possibleMoves[0];
-            let distToTarget = grid.GetHexDistance(closestToTarget, theHero.hex);
+            let distToTarget = grid.getHexDistance(closestToTarget, theHero.hex);
             for (let hex of possibleMoves) {
-                if (grid.GetHexDistance(hex, theHero.hex) < distToTarget) {
+                if (grid.getHexDistance(hex, theHero.hex) < distToTarget) {
 
-                    distToTarget = grid.GetHexDistance(hex, theHero.hex);
+                    distToTarget = grid.getHexDistance(hex, theHero.hex);
                     closestToTarget = hex;
                 }
             }

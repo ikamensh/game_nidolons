@@ -137,7 +137,7 @@ class Grid {
         if(unit.hex)
         {
             for(let hex of this.Hexes){
-                if(this.GetHexDistance(hex, unit.hex)===1)
+                if(this.getHexDistance(hex, unit.hex)===1)
                 {
                     movable_hexes.push(hex);
                 }
@@ -167,40 +167,40 @@ class Grid {
 
     moveUnitN(/*Character*/ unit) {
         let hex = unit.hex;
-        return this.GetHexById( this.GetHexId(hex.row-2, hex.col));
+        return this.getHexById( this.GetHexId(hex.row-2, hex.col));
 
     };
 
     moveUnitNE(/*Character*/ unit) {
         let hex = unit.hex;
-        return this.GetHexById( this.GetHexId(hex.row-1, hex.col+1));
+        return this.getHexById( this.GetHexId(hex.row-1, hex.col+1));
     };
 
     moveUnitNW(/*Character*/ unit) {
         let hex = unit.hex;
-        return this.GetHexById( this.GetHexId(hex.row-1, hex.col-1));
+        return this.getHexById( this.GetHexId(hex.row-1, hex.col-1));
     };
 
     moveUnitS(/*Character*/ unit) {
         let hex = unit.hex;
-        return this.GetHexById( this.GetHexId(hex.row+2, hex.col));
+        return this.getHexById( this.GetHexId(hex.row+2, hex.col));
     };
 
     moveUnitSE(/*Character*/ unit) {
         let hex = unit.hex;
-        return this.GetHexById( this.GetHexId(hex.row+1, hex.col+1));
+        return this.getHexById( this.GetHexId(hex.row+1, hex.col+1));
     };
 
     moveUnitSW(/*Character*/ unit) {
         let hex = unit.hex;
-        return this.GetHexById( this.GetHexId(hex.row+1, hex.col-1));
+        return this.getHexById( this.GetHexId(hex.row+1, hex.col-1));
     };
 
     /**
      * Returns a distance between two hexes
      * @return {number}
      */
-	GetHexDistance(/*Hexagon*/ h1, /*Hexagon*/ h2) {
+	getHexDistance(/*Hexagon*/ h1, /*Hexagon*/ h2) {
         //a good explanation of this calc can be found here:
         //http://playtechs.blogspot.com/2007/04/hex-grids.html
         let deltax = h1.PathCoOrdx - h2.PathCoOrdx;
@@ -209,7 +209,7 @@ class Grid {
     };
 
 
-    GetHexById(id) {
+    getHexById(id) {
         for(let i in this.Hexes)
         {
             if(this.Hexes[i].Id === id)
