@@ -96,12 +96,17 @@ class BottomPanel extends React.Component {
 		
 	
   render() {
-		return ( 
-			<div className="units_view_in_pb">
-				<AbilitiesPanel unit={this.state.unit}/>
-				<UnitStats unit={this.state.unit}/>
-				<UnitStats unit={this.state.selectedUnit}/>
-		  </div>
+		return (
+			<div className="bottom_panel">
+					<div className="abilities_panel">
+						<AbilitiesPanel unit={this.state.unit}/>
+					</div>
+					<div className="units_view_in_pb">
+
+						<UnitStats unit={this.state.unit}/>
+						<UnitStats unit={this.state.selectedUnit}/>
+				  </div>
+			</div>
 	  );
   }
 }

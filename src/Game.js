@@ -23,8 +23,39 @@ class Game {
 		
 		this.animationPause=0;
 		this.heroActive=true;
+		this.abilityBeingTargeted=null;
 
-	  }  
+	  }
+
+	  setAbilityBeingTargeted(/*Ability*/ ability){
+          this.abilityBeingTargeted=ability;
+	  }
+
+
+	  handleLeftClick(mousePos){
+          if (this.heroActive) {
+
+
+              this.grid.selectHex(mousePos.x, mousePos.y);
+              if(this.abilityBeingTargeted){
+              	 if(this.grid.selectedHex.content){
+					 this.issueOrderUseTargetUnitAbility(this.hero, this.abilityBeingTargeted, this.grid.selectedHex.content);
+                     this.endTurn();
+              	 }
+              	 this.abilityBeingTargeted=null;
+			  } else {
+                  this.issueOrderGo(this.grid.selectedHex);
+              }
+
+              return false;
+          }
+	  }
+
+	  endTurn(){
+          this.heroActive=false;
+          this.scheduleHostilesTurn();
+          this.refreshMovable(null);
+	  }
 	  
 	processDeath(/*Unit*/ unit){
 	  
@@ -172,9 +203,7 @@ class Game {
 	issueOrderGo(/*Hex */ hex){
 		if(hex.movable){
 			if(this.grid.goTo(hex,this.hero)){
-                this.heroActive=false;
-                this.scheduleHostilesTurn();
-                this.refreshMovable(null);
+                this.endTurn();
 			}
 		}
 	}

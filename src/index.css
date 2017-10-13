@@ -38,6 +38,11 @@ canvas {
 	
 }
 
+.bottom-panel {
+	display: flex;
+	flex-direction: column;
+}
+
 #debugInfo{
 	position: absolute;
 	width:250px;
@@ -73,6 +78,10 @@ canvas {
 	width: 35%;
 	display: flex;
 	flex-direction: column;
+}
+
+.abilities_panel{
+	height: 35px;
 }
 
 progress[value]::-webkit-progress-value {

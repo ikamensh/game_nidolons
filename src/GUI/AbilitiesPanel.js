@@ -4,7 +4,7 @@ class AbilityButton extends React.Component {
 		render() {
 		return (
 				  <div className="square">
-					   <img src={this.props.img}/>
+					   <img src={this.props.ability.img} className="square" /*onClick={() => this.props.onClick(i)}*//>
                   </div>
 			);
   }
@@ -27,12 +27,12 @@ class AbilitiesPanel extends React.Component {
 
       let abilities = [];
       for (let i = 0; i < this.state.unit.abilities.length; i++) {
-          abilities.push(<AbilityButton src={this.state.unit.abilities[i].img} key={i}/>);
+          abilities.push(<AbilityButton ability={this.state.unit.abilities[i]} key={i}/>);
       }
 
 
 		return ( 
-		  <div className="board-row">
+		  <div className="abilities_list">
 			  {abilities}
 		  </div>
 	  );

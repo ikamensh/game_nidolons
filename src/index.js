@@ -72,9 +72,10 @@ init();
 canvasDraw.addEventListener('mousemove', function (evt) {
 
     let mousePos = getMousePos(canvasDraw, evt);
+
     let oldHex = game.grid.selectedHex;
     let hex = game.grid.selectHex(mousePos.x, mousePos.y);
-    if (hex != oldHex) {
+    if (hex !== oldHex) {
         game.battleView.drawGrid(game.grid);
     }
 
@@ -87,14 +88,10 @@ canvasDraw.addEventListener('mousemove', function (evt) {
 
 //left mouse click: move, attack
 canvasDraw.addEventListener('click', function (evt) {
-    if (game.heroActive) {
 
-        let mousePos = getMousePos(canvasDraw, evt);
-        game.grid.selectHex(mousePos.x, mousePos.y);
-        game.issueOrderGo(game.grid.selectedHex);
+    let mousePos = getMousePos(canvasDraw, evt);
+    game.handleLeftClick(mousePos);
 
-        return false;
-    }
 
 }, false);
 
