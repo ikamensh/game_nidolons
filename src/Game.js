@@ -4,6 +4,7 @@ import {AI} from "./battle_system/AI"
 import {DisplacementAnimation, DelayedDisplacementAnimation} from "./GUI/DisplacementAnimation";
 import deadIcon from "./res/icons/dead.png"
 import {createImage} from "./utils/Utils"
+import {AtbController} from "./gameControllers/AtbController";
 
 /*
 Game is the highest level abstraction of the battlefield and everything happening on it - graphics, sounds and combat logic.
@@ -28,6 +29,10 @@ class Game {
 		this.abilityBeingTargeted=null;
 
 	  }
+
+	  init(){
+	    this.atbController=new AtbController(this.allObjects);
+      }
 
 	  setAbilityBeingTargeted(/*Ability*/ ability){
 
