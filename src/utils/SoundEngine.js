@@ -1,9 +1,5 @@
 class SoundsEngine { 
 	
-	constructor() {
-	
-	  }
-
 	playSound(/* Sound */ sound, /*float [0-1]*/volume){
 
 		if(sound)
@@ -15,6 +11,6 @@ class SoundsEngine {
 	}
 }
 
-var soundsEngine = new SoundsEngine();
+let soundsEngine = new SoundsEngine();
 
 export {soundsEngine};

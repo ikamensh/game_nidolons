@@ -3,7 +3,6 @@ import {createCanvas} from "../utils/Utils"
 import {Armor} from "./Armor";
 import {Damage} from "./Damage";
 import {DynamicValue} from "./DynamicValue";
-import {DisplacementAnimation} from "../GUI/DisplacementAnimation"
 
 class MapObject { 
 	

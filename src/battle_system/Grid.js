@@ -11,7 +11,7 @@ class Grid {
         this.Hexes = [];
         //setup a dictionary for use later for assigning the x or y CoOrd (depending on Orientation)
         let HexagonsByxOryCoOrd = {}; //Dictionary<int, List<Hexagon>>
-        let selectedHex = null;
+        this.selectedHex = null;
         let row = 0;
         let y = 20.0;
         while (y + Hexagon.HEIGHT <= height - 20) {

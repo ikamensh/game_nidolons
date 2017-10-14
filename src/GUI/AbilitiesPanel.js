@@ -4,7 +4,7 @@ class AbilityButton extends React.Component {
 		render() {
 		return (
 				  <div className="square">
-					   <img src={this.props.ability.img} className="square" onClick={() => this.props.onClick(this.props.ability)} />
+					   <img src={this.props.ability.img} className="square" onClick={() => this.props.onClick(this.props.ability)} alt={this.props.ability.name} />
                   </div>
 			);
   }

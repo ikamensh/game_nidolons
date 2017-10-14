@@ -15,7 +15,7 @@ import {createSoundDict} from "../../utils/Utils"
 
 let soundDict = createSoundDict(attack, move, pain, death);
 
-var heroParams = new ParamsDict(pic, createSoundDict, "Helene",30,15,
+var heroParams = new ParamsDict(pic, soundDict, "Helene",30,15,
 								new Damage(6,DamageType.SLASH), 
 								[1,2,1],[lightning, burningHand, magicMissile]);
 

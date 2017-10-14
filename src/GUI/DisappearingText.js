@@ -15,11 +15,11 @@ class DisappearingText {
 	}
 	
 	draw(ctx) {
+		let alpha=1;
 		if(this.lifetime){
-			var alpha = 1;
 			this.lifetime--;
 		} else if (this.fadetime){
-            var alpha = this.fadetime.getPercentageFull();
+            alpha = this.fadetime.getPercentageFull();
 			this.fadetime.value--;
 		} else {			
 			return true;
@@ -30,7 +30,7 @@ class DisappearingText {
         let colorStroke = 'rgba('+this.color.R +',' +this.color.G+',' +this.color.B+',' +alpha +')';
 		
 		if(this.animation){
-			var animationDisplacement = this.animation.calculateAnimDisplacement();
+			let animationDisplacement = this.animation.calculateAnimDisplacement();
 			if(/*Point */ animationDisplacement){
 				ctx.translate(animationDisplacement.x,animationDisplacement.y);
 			}

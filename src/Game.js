@@ -48,16 +48,16 @@ class Game {
           if (this.heroActive) {
 
 
-              this.grid.selectHex(mousePos.x, mousePos.y);
+              let hex = this.grid.selectHex(mousePos.x, mousePos.y);
               if(this.abilityBeingTargeted){
-              	 if(this.grid.selectedHex.content){
-					 if(this.issueOrderUseTargetUnitAbility(this.hero, this.abilityBeingTargeted, this.grid.selectedHex.content)){
+              	 if(hex.content){
+					 if(this.issueOrderUseTargetUnitAbility(this.hero, this.abilityBeingTargeted, hex.content)){
                          this.endTurn();
 					 }
               	 }
                   this.setAbilityBeingTargeted(null)
 			  } else {
-                  this.issueOrderGo(this.grid.selectedHex);
+                  this.issueOrderGo(hex);
               }
 
               return false;

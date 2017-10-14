@@ -12,7 +12,7 @@ import {createSoundDict} from "../../utils/Utils"
 
 let soundDict = createSoundDict(attack, move, pain, death);
 
-let ghostParams = new ParamsDict(pic, createSoundDict, "Ghost",5,0,
+let ghostParams = new ParamsDict(pic, soundDict, "Ghost",5,0,
     new Damage(4,DamageType.MAGIC),
     [3,3,0]);
 

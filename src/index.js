@@ -6,13 +6,11 @@ import {Grid} from './battle_system/Grid.js'
 import {Unit} from './battle_system/Character.js'
 import {Game} from './Game.js'
 import {BottomPanel} from './GUI/BottomPanel.js'
-import {soundEngine} from './utils/SoundEngine.js'
 import {BattleView} from './GUI/BattleView.js'
 import {heroParams} from "./units/tomb_ride/Helene"
 import {ghostParams} from "./units/tomb_ride/Ghost"
 import {pirateParams} from "./units/tomb_ride/Pirate"
 import $ from 'jquery';
-import {createSoundDict} from "./utils/Utils"
 
 // export for others scripts to use
 window.$ = $;

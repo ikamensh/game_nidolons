@@ -1,10 +1,12 @@
 import React from 'react';
 import {AbilitiesPanel} from "./AbilitiesPanel"
+import {Damage} from "../battle_system/Damage"
+import {Armor} from "../battle_system/Armor"
 
 class AttributeDisplay extends React.Component {
 		render() {
 		return (<div className="board-row">
-				  <img className="square" src={this.props.img} />
+				  <img className="square" src={this.props.img} alt={this.props.attributeName}/>
 				  <div className="square"> {this.props.num} </div>
 			</div>);
   }
@@ -15,9 +17,9 @@ class ArmorDisplay extends React.Component {
 	render(){
 		return(
 		<div className="armor">
-			<AttributeDisplay img={require('../icons/icon1.png')} num={this.props.armor.SLASH} />
-			<AttributeDisplay img={require('../icons/icon2.ico')} num={this.props.armor.PIERCE} />
-			<AttributeDisplay img={require('../icons/icon3.png')} num={this.props.armor.MAGIC} />
+			<AttributeDisplay img={Armor.icons.SLASH} num={this.props.armor.SLASH} />
+			<AttributeDisplay img={Armor.icons.PIERCE} num={this.props.armor.PIERCE} />
+			<AttributeDisplay img={Armor.icons.MAGIC} num={this.props.armor.MAGIC} />
         </div>
 		);
 	}
@@ -27,7 +29,7 @@ class DamageDisplay extends React.Component {
 	render(){
 		return(
 		<div className="damage">
-			<AttributeDisplay img={require('../icons/icon_dmg.ico')} num={this.props.damage.amount} />
+			<AttributeDisplay img={Damage.icons[this.props.damage.type]} num={this.props.damage.amount} />
         </div>
 		);
 	}
@@ -38,7 +40,7 @@ class UnitFace extends React.Component {
 	render(){
 		return(
 		<div className="unit_face">
-			<img src={this.props.img} className="avaPic"/>
+			<img src={this.props.img} className="avaPic" alt={this.props.name}/>
 			<label> {this.props.name} </label>
 			<div> {this.props.HP.value}/{this.props.HP.maxValue} </div>
 			

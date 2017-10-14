@@ -27,7 +27,6 @@ function createImage(/*Require*/ source){
     image.classList.add('avaPic');
     image.style.height=128;
     image.style.width=128;
-    image.up
     return image;
 }
 
