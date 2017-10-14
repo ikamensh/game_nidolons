@@ -2,6 +2,8 @@ import {DynamicValue} from './battle_system/DynamicValue.js'
 import {DisappearingText} from './GUI/DisappearingText.js'
 import {AI} from "./battle_system/AI"
 import {DisplacementAnimation, DelayedDisplacementAnimation} from "./GUI/DisplacementAnimation";
+import deadIcon from "./res/icons/dead.png"
+import {createImage} from "./utils/Utils"
 
 /*
 Game is the highest level abstraction of the battlefield and everything happening on it - graphics, sounds and combat logic.
@@ -49,6 +51,9 @@ class Game {
 
 
               let hex = this.grid.selectHex(mousePos.x, mousePos.y);
+              if(!hex){
+                  return false;
+              }
               if(this.abilityBeingTargeted){
               	 if(hex.content){
 					 if(this.issueOrderUseTargetUnitAbility(this.hero, this.abilityBeingTargeted, hex.content)){
@@ -60,7 +65,7 @@ class Game {
                   this.issueOrderGo(hex);
               }
 
-              return false;
+
           }
 	  }
 
@@ -73,9 +78,8 @@ class Game {
 	processDeath(/*Unit*/ unit){
 	  
 		unit.hex.content=null;
-		unit.hex=null;
-		unit.game=null;
-		
+		unit.picsrc=deadIcon;
+        unit.avatar=createImage(deadIcon);
 		  
 		let index = this.allObjects.indexOf(unit);
 				if (index > -1) {

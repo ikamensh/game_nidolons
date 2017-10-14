@@ -336,7 +336,7 @@ constructor(id, x, y, row, col) {
 
         //ctx.scale(0.97, 0.97);
 
-        let fillStyle, strokeStyle, lineWidth=1;
+        let lineWidth=1;
 
         let R=200, G=200, B=60, A=0.4;
         let RF=128, GF=128, BF=128, AF=0;
