@@ -4,7 +4,7 @@ class AI {
     static wonderingFightBack(/*Unit*/ unit, /*Grid*/ grid, /*Unit*/ theHero, /*Array<Unit>*/ allies) {
 
         /*Hex[]*/
-        let possibleMoves = grid.getMovableHexes(unit);
+        let possibleMoves = grid.getMovableHexes(unit, 1);
 
         if (possibleMoves.length) {
 
@@ -41,7 +41,7 @@ class AI {
 
     static pursueAndFight(/*Unit*/ unit, /*Grid*/ grid, /*Unit*/ theHero,) {
         /*Hex[]*/
-        let possibleMoves = grid.getMovableHexes(unit);
+        let possibleMoves = grid.getMovableHexes(unit, 1);
 
         if (possibleMoves.length) {
             let closestToTarget = possibleMoves[0];

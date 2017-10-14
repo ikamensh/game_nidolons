@@ -38,7 +38,7 @@ class UnitFace extends React.Component {
 	render(){
 		return(
 		<div className="unit_face">
-			<img src={this.props.img} />
+			<img src={this.props.img} className="avaPic"/>
 			<label> {this.props.name} </label>
 			<div> {this.props.HP.value}/{this.props.HP.maxValue} </div>
 			
@@ -59,7 +59,7 @@ class UnitStats extends React.Component {
 			return(			
 			<div className="unit_view">
 			<div className="inner_unit_view">
-					<UnitFace img = {require('../res/tr_128.png')}
+					<UnitFace img = {this.props.unit.picsrc}
 					name = {this.props.unit.name}
 					HP = {this.props.unit.HP}/>
 					<DamageDisplay damage={this.props.unit.meleeDamage}/>
@@ -99,7 +99,7 @@ class BottomPanel extends React.Component {
 		return (
 			<div className="bottom_panel">
 					<div className="abilities_panel">
-						<AbilitiesPanel unit={this.state.unit}/>
+						<AbilitiesPanel unit={this.state.unit} setActiveAbility={abil => this.props.setActiveAbility(abil)}/>
 					</div>
 					<div className="units_view_in_pb">
 

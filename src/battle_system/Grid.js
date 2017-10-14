@@ -112,12 +112,11 @@ class Grid {
             {
 
                 this.game.processAttack(unit,hex.content);
-
-                this.game.animationPause=11;
+                this.game.animationPause=15;
 
             } else {
 
-                this.game.animationPause=14;
+                this.game.animationPause=15;
                 unit.hex.content=null;
                 unit.animation = new DisplacementAnimation( new Point( -(hex.x-unit.hex.x), -(hex.y-unit.hex.y)), 15, false);
                 this.placeUnit(hex, unit);
@@ -130,14 +129,14 @@ class Grid {
 
     };
 
-    getMovableHexes(/*Character*/ unit) {
+    getMovableHexes(/*Character*/ unit, /*int*/ distance) {
 
         let movable_hexes=[];
 
         if(unit.hex)
         {
             for(let hex of this.Hexes){
-                if(this.getHexDistance(hex, unit.hex)===1)
+                if(this.getHexDistance(hex, unit.hex) <= distance)
                 {
                     movable_hexes.push(hex);
                 }

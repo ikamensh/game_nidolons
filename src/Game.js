@@ -28,7 +28,19 @@ class Game {
 	  }
 
 	  setAbilityBeingTargeted(/*Ability*/ ability){
-          this.abilityBeingTargeted=ability;
+
+		if(ability){
+            if(this.hero.mana.value < ability.manacost){
+                this.abilityBeingTargeted=null;
+                return;
+            }
+            this.abilityBeingTargeted=ability;
+            this.refreshMovableForUnit((this.hero), ability.range);
+		} else {
+			this.abilityBeingTargeted=null;
+            this.refreshMovableForUnit((this.hero), 1);
+		}
+
 	  }
 
 
@@ -39,10 +51,11 @@ class Game {
               this.grid.selectHex(mousePos.x, mousePos.y);
               if(this.abilityBeingTargeted){
               	 if(this.grid.selectedHex.content){
-					 this.issueOrderUseTargetUnitAbility(this.hero, this.abilityBeingTargeted, this.grid.selectedHex.content);
-                     this.endTurn();
+					 if(this.issueOrderUseTargetUnitAbility(this.hero, this.abilityBeingTargeted, this.grid.selectedHex.content)){
+                         this.endTurn();
+					 }
               	 }
-              	 this.abilityBeingTargeted=null;
+                  this.setAbilityBeingTargeted(null)
 			  } else {
                   this.issueOrderGo(this.grid.selectedHex);
               }
@@ -101,13 +114,9 @@ class Game {
 
 	  
 	scheduleHostilesTurn(){
-		  
 		for( let unit of this.hostileUnits){
-			  
 			  unit.madeHisTurn=false;
-			  
-		}		  
-		  
+		}
 	}
 	
 	//return: boolean: all hostiles made their turn
@@ -150,9 +159,9 @@ class Game {
         if (dmgDealt / target.HP.maxValue>0.4) {
 			target.playSound('pain', Math.min(1, dmgDealt/target.HP.maxValue))
 			target.animation = new DelayedDisplacementAnimation(/*Point*/ {
-				x: (recipientHex.x - comingFrom.x) / 6,
-				y: (recipientHex.y - comingFrom.y) / 6
-			}, 14, false, 10);
+				x: (recipientHex.x - comingFrom.x) / 3,
+				y: (recipientHex.y - comingFrom.y) / 3
+			}, 5, false, 10);
     	}
 
         let color = {R:255, G:120, B:120};
@@ -164,21 +173,19 @@ class Game {
                 60, new DynamicValue(45),
                 12, anim, color));
 
+        this.animationPause=12;
+
         return dmgDealt;
 
 	}
 
 	checkTargetedAbility(/* AbilityDealDmg*/ ability, /*Unit*/ source, /*Unit*/ target){
-		if(source.mana < ability.manacost){
-			return false;
-		} else if(this.grid.getHexDistance(source.hex, target.hex) > ability.range) {
-			return false;
-		}
-		return true;
+		return this.grid.getHexDistance(source.hex, target.hex) <= ability.range;
 	}
 
 	processTargetDamageAbility(/* AbilityDealDmg*/ ability, /*Unit*/ source, /*Unit*/ target){
-		source.mana -= ability.manacost;
+		source.mana.value -= ability.manacost;
+		source.needsRedraw=true;
 		this.processDamage(ability.dmg, source.hex, target);
 
 	}
@@ -186,7 +193,9 @@ class Game {
 	issueOrderUseTargetUnitAbility(/*Unit*/ user, /*Ability*/ ability, /*Unit*/ target){
 		if(this.checkTargetedAbility(ability, user, target)){
 			this.processTargetDamageAbility(ability, user, target);
+			return true;
 		}
+		return false;
 	}
 
 
@@ -196,8 +205,8 @@ class Game {
 		this.battleView.drawGrid(this.grid);
 	}
 
-	refreshMovableForUnit(/*Unit */ unit){
-        this.refreshMovable(this.grid.getMovableHexes(unit));
+	refreshMovableForUnit(/*Unit */ unit, /*int*/ distance){
+        this.refreshMovable(this.grid.getMovableHexes(unit, distance));
 	}
 	
 	issueOrderGo(/*Hex */ hex){
@@ -211,7 +220,6 @@ class Game {
 	timestep(){
 
 
-        //TODO this.battleView.drawGrid(this.grid); - stops grid flickering! - but is unnecessary and costly!
         //this.battleView.drawGrid(this.grid); //remnants of the war of the days past
         this.effects = this.battleView.drawEffects(this.effects);
 
@@ -229,7 +237,7 @@ class Game {
 		} else if(!this.heroActive){
 			if(this.executeHostilesTurn()){
 				this.heroActive=true;
-				this.refreshMovableForUnit((this.hero));
+				this.refreshMovableForUnit((this.hero), 1);
 			}
 		}		
 				

@@ -113,6 +113,22 @@ progress[value]::-webkit-progress-value {
   width: 34px;
 }
 
+
+.avaPic {
+	background: #fff;
+	border: 1px solid #999;
+	float: left;
+	font-size: 24px;
+	font-weight: bold;
+	line-height: 128px;
+	height: 128px;
+	margin-right: -1px;
+	margin-top: -1px;
+	padding: 0;
+	text-align: center;
+	width: 128px;
+}
+
 .sourceImg {
 	display: none;
 }

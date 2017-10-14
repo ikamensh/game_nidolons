@@ -8,17 +8,14 @@ import {Game} from './Game.js'
 import {BottomPanel} from './GUI/BottomPanel.js'
 import {soundEngine} from './utils/SoundEngine.js'
 import {BattleView} from './GUI/BattleView.js'
-import {heroParams, ghostParams} from './units/units.js'
+import {heroParams} from "./units/tomb_ride/Helene"
+import {ghostParams} from "./units/tomb_ride/Ghost"
+import {pirateParams} from "./units/tomb_ride/Pirate"
 import $ from 'jquery';
-import {createSoundDict} from "./units/units"
-
+import {createSoundDict} from "./utils/Utils"
 
 // export for others scripts to use
 window.$ = $;
-
-let img = document.getElementById('theHeroImg');
-let img1 = document.getElementById('enemy');
-
 
 
 let canvasDraw = document.getElementById('drawing');
@@ -30,30 +27,35 @@ let debugInfo = document.getElementById('debugInfo');
 
 let theGrid = new Grid(960, 500);
 let game = new Game(theGrid);
+game.animationPause=5; //let time for images to load
 game.battleView = new BattleView(canvasDraw, canvasGrid, canvasUnits, canvasEffects);
 
 
-let theHero = new Unit(img, heroParams);
+let theHero = new Unit(heroParams);
 game.grid.placeUnit(game.grid.getHexById("(2,4)"), theHero);
 game.setHero(theHero);
 
-let enemy = new Unit(img1, ghostParams);
+let enemy = new Unit(ghostParams);
 game.addHostile(enemy);
 game.grid.placeUnit(game.grid.getHexById("(5,5)"), enemy);
 
-enemy = new Unit(img1, ghostParams);
+enemy = new Unit(ghostParams);
 game.addHostile(enemy);
 game.grid.placeUnit(game.grid.getHexById("(5,3)"), enemy);
 
+enemy = new Unit(pirateParams);
+game.addHostile(enemy);
+game.grid.placeUnit(game.grid.getHexById("(1,1)"), enemy);
+
 game.reactComponent = ReactDOM.render(
-    <BottomPanel unit={game.hero} selectedUnit={game.hero}/>,
+    <BottomPanel unit={game.hero} selectedUnit={game.hero} setActiveAbility={abil => game.setAbilityBeingTargeted(abil)}/>,
     document.getElementById('bottom-panel')
 );
 
 
 function init() {
     window.requestAnimationFrame(draw);
-    game.refreshMovableForUnit(theHero);
+    game.refreshMovableForUnit(theHero, 1);
 }
 
 function draw() {

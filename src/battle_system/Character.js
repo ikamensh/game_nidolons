@@ -4,17 +4,17 @@ import {Armor} from "./Armor";
 import {Damage} from "./Damage";
 import {DynamicValue} from "./DynamicValue";
 import {DisplacementAnimation} from "../GUI/DisplacementAnimation"
-import {createSoundDict} from "../units/units"
 
 class MapObject { 
 	
-	constructor(/*Image*/ avatarImage, /* txt_id -> Sound */ soundsDict) {
+	constructor(/*ParamsDict*/ params) {
 		
 		this.x=0
 		this.y=0
-		this.avatar = avatarImage;
+		this.avatar = params.picture;
+        this.picsrc = params.picsrc;
 		this.hex = null;
-		this.soundsDict = soundsDict;
+		this.soundsDict = params.soundsDictionary;
 		this.canvas = createCanvas(128,128);
 		this.ctx=this.canvas.getContext('2d');
         this.needsRedraw=true;
@@ -31,8 +31,7 @@ class MapObject {
 	}
 
     draw(/* Canvas2D */ctx){
-	    if(this.needsRedraw){
-	        this.redraw();
+	    if(this.needsRedraw && this.redraw()){
 	        this.needsRedraw=false;
         }
 
@@ -50,6 +49,10 @@ class MapObject {
     };
 
 	redraw(){
+
+	    if(!this.avatar){
+	        return false;
+	    }
 
         this.ctx.save();
         this.ctx.translate(-this.hex.x,-this.hex.y);
@@ -85,10 +88,10 @@ class MapObject {
 
 class Unit extends MapObject {
 	
-	constructor( /*Image*/ avatarImage, /*ParamsDict*/ params)
+	constructor( /*ParamsDict*/ params)
 	{
-		let soundsDict = createSoundDict(params.name);
-		super(avatarImage, soundsDict);
+
+		super(params);
 		this.name = params.name;
 		this.HP = new DynamicValue(params.HP);
 		if(params.mana) {
