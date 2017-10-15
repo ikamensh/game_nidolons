@@ -32,6 +32,7 @@ class Game {
 
 	  init(){
 	    this.atbController=new AtbController(this.allObjects);
+	    this.heroActive=false;
       }
 
 	  setAbilityBeingTargeted(/*Ability*/ ability){
@@ -62,29 +63,26 @@ class Game {
               if(this.abilityBeingTargeted){
               	 if(hex.content){
 					 if(this.issueOrderUseTargetUnitAbility(this.hero, this.abilityBeingTargeted, hex.content)){
-                         this.endTurn();
+                         this.heroActive=false;
 					 }
               	 }
                   this.setAbilityBeingTargeted(null)
 			  } else {
-                  this.issueOrderGo(hex);
+                  if(this.issueOrderGo(hex, this.hero)){
+                      this.heroActive=false;
+                  }
               }
-
-
           }
 	  }
 
-	  endTurn(){
-          this.heroActive=false;
-          this.scheduleHostilesTurn();
-          this.refreshMovable(null);
-	  }
 	  
 	processDeath(/*Unit*/ unit){
 	  
 		unit.hex.content=null;
 		unit.picsrc=deadIcon;
         unit.avatar=createImage(deadIcon);
+
+        this.atbController.removeUnit(unit);
 		  
 		let index = this.allObjects.indexOf(unit);
 				if (index > -1) {
@@ -119,33 +117,15 @@ class Game {
 	  addEffect(/*Disappearing Text*/ effect){
 		  this.effects.push(effect);
 	  }
-	  
 
-	  
-	scheduleHostilesTurn(){
-		for( let unit of this.hostileUnits){
-			  unit.madeHisTurn=false;
-		}
-	}
-	
-	//return: boolean: all hostiles made their turn
-	executeHostilesTurn(){
-		  
-		for( let unit of this.hostileUnits){
-			  if(!unit.madeHisTurn)
-			  {
-				  let hex = AI.pursueAndFight(unit, this.grid, this.hero);
-                  if(hex){
-                      this.grid.goTo(hex, unit);
-                  }
-				  unit.madeHisTurn=true;
-				  return false;
-			  }
-			  
-		}
-		return true;		
-		  
-	}
+
+	executeHostileTurn(/*Unit*/ unit){
+        let hex = AI.pursueAndFight(unit, this.grid, this.hero);
+        if(hex){
+            return this.issueOrderGo(hex, unit);
+        }
+        return false;
+    }
 	
 
 		 
@@ -197,6 +177,9 @@ class Game {
 		source.needsRedraw=true;
 		this.processDamage(ability.dmg, source.hex, target);
 
+		source.atbReadiness-=1;
+        this.atbController.processAtbRelevantEvent();
+
 	}
 
 	issueOrderUseTargetUnitAbility(/*Unit*/ user, /*Ability*/ ability, /*Unit*/ target){
@@ -218,15 +201,19 @@ class Game {
         this.refreshMovable(this.grid.getMovableHexes(unit, distance));
 	}
 	
-	issueOrderGo(/*Hex */ hex){
-		if(hex.movable){
-			if(this.grid.goTo(hex,this.hero)){
-                this.endTurn();
-			}
+	issueOrderGo(/*Hex */ hex, /*Unit*/ unit){
+		if(hex && this.grid.getHexDistance(hex,unit.hex)<=1){
+			if( this.grid.goTo(hex, unit)){
+			    unit.atbReadiness-=1;
+                this.atbController.processAtbRelevantEvent();
+			    return true;
+            }
 		}
 	}
 	
 	timestep(){
+
+
 
 
         //this.battleView.drawGrid(this.grid); //remnants of the war of the days past
@@ -235,7 +222,7 @@ class Game {
 
         if(this.reactComponent)
         {
-            this.reactComponent.update(this.hero, this.selectedUnit);
+            this.reactComponent.update(this.hero, this.selectedUnit, this.atbController);
         }
 
 		if(this.animationPause>=0){
@@ -243,14 +230,20 @@ class Game {
             this.battleView.drawUnits(this.allObjects);
 			this.animationPause--;
 
-		} else if(!this.heroActive){
-			if(this.executeHostilesTurn()){
-				this.heroActive=true;
-				this.refreshMovableForUnit((this.hero), 1);
-			}
-		}		
+		} else if(this.atbController && !this.heroActive){
+		    let nextUnit = this.atbController.step();
+		    if(nextUnit===this.hero){
+		        this.heroActive=true;
+		        this.refreshMovableForUnit(nextUnit,1);
+            } else {
+		        this.executeHostileTurn(nextUnit);
+            }
+        }
+
 				
-	}	
+	}
+
+
 }
 
 

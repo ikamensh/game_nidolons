@@ -14,20 +14,16 @@ class AbilityButton extends React.Component {
 
 
 class AbilitiesPanel extends React.Component {
-	
-	constructor(props) {
-			  super(props);
-			  this.state = {
-				unit : props.unit
-			  };
-		}
 
   render() {
 
       let abilities = [];
-      for (let i = 0; i < this.state.unit.abilities.length; i++) {
-          abilities.push(<AbilityButton ability={this.state.unit.abilities[i]} key={i} onClick={abil => this.props.setActiveAbility(abil)}/>);
-      }
+
+      if(this.props.unit && this.props.unit.abilities){
+		  	for (let i = 0; i < this.props.unit.abilities.length; i++) {
+			  abilities.push(<AbilityButton ability={this.props.unit.abilities[i]} key={i} onClick={abil => this.props.setActiveAbility(abil)}/>);
+		  }
+	  }
 
 
 		return ( 

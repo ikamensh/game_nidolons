@@ -96,7 +96,7 @@ class Grid {
      * Finds a hex at a given point, and places given Unit there.
      * @return {Hexagon}
      */
-    placeUnit(/*Hexagon*/ hex, /*Character*/ unit) {
+    placeUnit(/*Hexagon*/ hex, /*Unit*/ unit) {
 
         hex.content = unit;
         unit.hex = hex;
@@ -164,34 +164,27 @@ class Grid {
 
     };
 
-    moveUnitN(/*Character*/ unit) {
-        let hex = unit.hex;
+    moveUnitN(/*Hex*/ hex) {
         return this.getHexById( this.GetHexId(hex.row-2, hex.col));
-
     };
 
-    moveUnitNE(/*Character*/ unit) {
-        let hex = unit.hex;
+    moveUnitNE(/*Hex*/ hex) {
         return this.getHexById( this.GetHexId(hex.row-1, hex.col+1));
     };
 
-    moveUnitNW(/*Character*/ unit) {
-        let hex = unit.hex;
+    moveUnitNW(/*Hex*/ hex) {
         return this.getHexById( this.GetHexId(hex.row-1, hex.col-1));
     };
 
-    moveUnitS(/*Character*/ unit) {
-        let hex = unit.hex;
+    moveUnitS(/*Hex*/ hex) {
         return this.getHexById( this.GetHexId(hex.row+2, hex.col));
     };
 
-    moveUnitSE(/*Character*/ unit) {
-        let hex = unit.hex;
+    moveUnitSE(/*Hex*/ hex) {
         return this.getHexById( this.GetHexId(hex.row+1, hex.col+1));
     };
 
-    moveUnitSW(/*Character*/ unit) {
-        let hex = unit.hex;
+    moveUnitSW(/*Hex*/ hex) {
         return this.getHexById( this.GetHexId(hex.row+1, hex.col-1));
     };
 

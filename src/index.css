@@ -84,6 +84,13 @@ canvas {
 	height: 35px;
 }
 
+.atb_panel{
+	height: 35px;
+	display: flex;
+	flex-direction: column;
+	right: 10px;
+}
+
 progress[value]::-webkit-progress-value {
   background-image:
 	   -webkit-linear-gradient(-45deg, 

@@ -2,6 +2,7 @@ import React from 'react';
 import {AbilitiesPanel} from "./AbilitiesPanel"
 import {Damage} from "../battle_system/Damage"
 import {Armor} from "../battle_system/Armor"
+import {AtbPanel} from "./AtbPanel"
 
 class AttributeDisplay extends React.Component {
 		render() {
@@ -84,14 +85,15 @@ class BottomPanel extends React.Component {
 			  super(props);
 			  this.state = {
 				selectedUnit : props.selectedUnit,
-				unit : props.unit
+				unit : props.unit,
+				  atb: props.atb
 			  };
 		}
 		
-		update(hero, selected){
+		update(hero, selected, atb){
 			if(this.state.hero!==hero || this.state.selectedUnit!==selected)
 			{
-				this.setState({unit: hero, selectedUnit: selected});
+				this.setState({unit: hero, selectedUnit: selected, atb: atb});
 			}
 		}
 		
@@ -108,6 +110,9 @@ class BottomPanel extends React.Component {
 						<UnitStats unit={this.state.unit}/>
 						<UnitStats unit={this.state.selectedUnit}/>
 				  </div>
+					<div className="atb_panel">
+					<AtbPanel atb={this.state.atb}/>
+				</div>
 			</div>
 	  );
   }

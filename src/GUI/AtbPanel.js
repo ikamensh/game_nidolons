@@ -1,41 +1,36 @@
 import React from 'react';
 
-class AbilityButton extends React.Component {
+class UnitOnAtb extends React.Component {
 		render() {
 		return (
 				  <div className="square">
-					   <img src={this.props.ability.img} className="square" onClick={() => this.props.onClick(this.props.ability)} alt={this.props.ability.name} />
+					   <img src={this.props.unit.picsrc} className="square" onClick={() => this.props.onClick(this.props.ability)} alt={this.props.unit.name} />
                   </div>
 			);
-  }
+		}
 }
 
 
 
 
-class AbilitiesPanel extends React.Component {
+class AtbPanel extends React.Component {
 	
-	constructor(props) {
-			  super(props);
-			  this.state = {
-				unit : props.unit
-			  };
-		}
 
   render() {
 
-      let abilities = [];
-      for (let i = 0; i < this.state.unit.abilities.length; i++) {
-          abilities.push(<AbilityButton ability={this.state.unit.abilities[i]} key={i} onClick={abil => this.props.setActiveAbility(abil)}/>);
+      let units = [];
+      if(this.props.atb){
+		  for (let i = 0; i < this.props.atb.unitsInAtb.length; i++) {
+			  units.push(<UnitOnAtb unit={this.props.atb.unitsInAtb[i]} key={i} />); //onClick={abil => this.props.setActiveAbility(abil)}
+		  }
       }
 
-
 		return ( 
-		  <div className="abilities_list">
-			  {abilities}
+		  <div className="atb_list">
+			  {units}
 		  </div>
 	  );
   }
 }
 
-export {AbilitiesPanel};
+export {AtbPanel};

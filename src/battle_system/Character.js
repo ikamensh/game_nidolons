@@ -8,8 +8,6 @@ class MapObject {
 	
 	constructor(/*ParamsDict*/ params) {
 		
-		this.x=0
-		this.y=0
 		this.avatar = params.picture;
         this.picsrc = params.picsrc;
 		this.hex = null;
@@ -100,6 +98,8 @@ class Unit extends MapObject {
 
 		this.meleeDamage = new Damage(params.dmg.amount, params.dmg.type); 
 		this.armor = new Armor(params.armor[0],params.armor[1],params.armor[2]) ;
+		//todo init properly
+        this.initiative=10;
 		
 	}
 	

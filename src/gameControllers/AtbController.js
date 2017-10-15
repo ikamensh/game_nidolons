@@ -6,6 +6,8 @@ class AtbController{
         for( let unit of unitsInAtb){
             this.addUnit(unit);
         }
+        this.updateTimeTillTurn();
+
 
     }
 
@@ -16,7 +18,7 @@ class AtbController{
                 unit.timeTillTurn = (1-unit.atbReadiness)/unit.initiative;
 
                 //should never happen, but ye know..
-                if(unit.atbReadiness>1.01){
+                if(unit.atbReadiness>1.1){
                     alert("dafuck going on in atbCOntroller?! "+unit.name);
                 }
             }
@@ -29,14 +31,18 @@ class AtbController{
         if (index > -1) {
             this.unitsInAtb.splice(index, 1);
         }
+        this.processAtbRelevantEvent();
     }
 
     addUnit(/*Unit*/ unit){
-        if(unit.initiative && unit.atbReadiness)
+        if(unit.initiative)
         {
-            this.unitsInAtb.add(unit);
+            unit.atbReadiness = Math.random()*0.25;
+            this.unitsInAtb.push(unit);
         }
     }
+
+
 
 
 
@@ -58,16 +64,24 @@ class AtbController{
         this.updateTurnOrder();
         if(this.unitsInAtb[0].atbReadiness>=1){
             return this.unitsInAtb[0];
-        } else return null;
+        } else {
+            return false; //this.step();
+        }
 
     }
 
 
 
+    processAtbRelevantEvent(){
+        this.updateTimeTillTurn();
+        this.updateTurnOrder();
+    }
+
+
 
     static CompareForSort(first, second)
     {
-        if (first.timeTillTurn == second.timeTillTurn)
+        if (first.timeTillTurn === second.timeTillTurn)
             return 0;
         if (first.timeTillTurn < second.timeTillTurn)
             return -1;
