@@ -59,9 +59,9 @@ function drawHexGrid()
 	var canvas = document.getElementById("hexCanvas");
 	var ctx = canvas.getContext('2d');
 	ctx.clearRect(0, 0, 800, 600);
-	for(var h in grid.Hexes)
+	for(var h in grid.hexes)
 	{
-		grid.Hexes[h].draw(ctx);
+		grid.hexes[h].draw(ctx);
 	}
 }
 

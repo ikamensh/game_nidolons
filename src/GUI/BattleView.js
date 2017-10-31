@@ -20,7 +20,7 @@ class BattleView{
         //draw hex field
 
         this.ctxGrid.clearRect(0, 0, 960, 600);
-        for(let hex of grid.Hexes) {
+        for(let hex of grid.hexes) {
             this.ctxDraw.clearRect(0, 0, 960, 600);
             hex.draw(this.ctxDraw);
             this.ctxGrid.drawImage(this.canvasDraw,0,0);

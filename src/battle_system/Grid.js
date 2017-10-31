@@ -8,9 +8,10 @@ class Grid {
 
     constructor(/*double*/ width, /*double*/ height) {
 
-        this.Hexes = [];
+        this.hexes = [];
         //setup a dictionary for use later for assigning the x or y CoOrd (depending on Orientation)
-        let HexagonsByxOryCoOrd = {}; //Dictionary<int, List<Hexagon>>
+        let columns = {}; //Dictionary<int, List<Hexagon>>
+
         this.selectedHex = null;
         let row = 0;
         let y = 20.0;
@@ -25,17 +26,15 @@ class Grid {
 
             let x = offset + 50;
             while (x + Hexagon.WIDTH <= width - 20) {
-                let hexId = this.GetHexId(row, col);
-                let h = new Hexagon(hexId, x, y, row, col);
+                let hex = new Hexagon(x, y);
 
-                let pathCoOrd = col;
-                h.PathCoOrdx = col;//the column is the x coordinate of the hex, for the y coordinate we need to get more fancy
+                hex.xCoord = col;//the column is the x coordinate of the hex, for the y coordinate we need to get more fancy
 
-                this.Hexes.push(h);
+                this.hexes.push(hex);
 
-                if (!HexagonsByxOryCoOrd[pathCoOrd])
-                    HexagonsByxOryCoOrd[pathCoOrd] = [];
-                HexagonsByxOryCoOrd[pathCoOrd].push(h);
+                if (!columns[col])
+                    columns[col] = [];
+                columns[col].push(hex);
 
                 col += 2;
                 x += Hexagon.WIDTH + Hexagon.SIDE;
@@ -45,50 +44,48 @@ class Grid {
             y += Hexagon.HEIGHT / 2;
         }
 
+        this.columns = columns;
+
         //finally go through our list of hexagons by their x co-ordinate to assign the y co-ordinate
-        for (let coOrd1 in HexagonsByxOryCoOrd) {
-            let hexagonsByxOry = HexagonsByxOryCoOrd[coOrd1];
-            let coOrd2 = Math.floor(coOrd1 / 2) + (coOrd1 % 2);
-            for (let i in hexagonsByxOry) {
-                let h = hexagonsByxOry[i];//Hexagon
-                h.PathCoOrdy = coOrd2++;
+        for (let coOrd1 in columns) {
+            let column = columns[coOrd1];
+            let yCoord = Math.floor(coOrd1 / 2) + (coOrd1 % 2);
+            for (let /*Hexagon*/hexInColumn in column) {
+                let hexagon = column[hexInColumn];
+                hexagon.yCoord = yCoord;
+                yCoord++;
             }
         }
     };
 
     static Letters='ABCDEFGHIJKLMNOPQRSTUVWxyZ';
 
-    GetHexId(row, col) {
-
-        return "("+row+","+col+")";
-    };
-
     /**
      * Returns a hex at a given point
      * @return {Hexagon}
      */
-    GetHexAt(x, y) {
+    getHexAt(x, y) {
         //find the hex that contains this point
-        for (let h in this.Hexes)
+        for (let h in this.hexes)
         {
-            if (this.Hexes[h].isInBounds(x,y))
+            if (this.hexes[h].isInBounds(x,y))
             {
-                return this.Hexes[h];
+                return this.hexes[h];
             }
         }
 
         return null;
     };
 
-    makeMovable(/*Array<Hexagon> */ movable){
-        for(let hex of this.Hexes){
+    getHex(/*int*/ column, /*int*/ row){
+        if(this.columns[column]){
+            return this.columns[column][row-Math.floor(column / 2) + (column % 2)];
+        }
+    }
 
-            if(movable && movable.indexOf(hex) !== -1)
-            {
-                hex.movable=true;
-            } else {
-                hex.movable=false;
-            }
+    makeMovable(/*Array<Hexagon> */ movable){
+        for(let hex of this.hexes){
+                hex.movable=movable && movable.indexOf(hex) !== -1;
         }
     };
 
@@ -135,7 +132,7 @@ class Grid {
 
         if(unit.hex)
         {
-            for(let hex of this.Hexes){
+            for(let hex of this.hexes){
                 if(this.getHexDistance(hex, unit.hex) <= distance)
                 {
                     movable_hexes.push(hex);
@@ -147,7 +144,7 @@ class Grid {
     };
 
     selectHex(/*float*/ x,  /*float*/ y){
-        let hex = this.GetHexAt(x ,y );
+        let hex = this.getHexAt(x ,y );
 
         if(this.selectedHex)
         {
@@ -164,28 +161,28 @@ class Grid {
 
     };
 
-    moveUnitN(/*Hex*/ hex) {
-        return this.getHexById( this.GetHexId(hex.row-2, hex.col));
+    moveN(/*Hex*/ hex) {
+        return this.getHex(hex.xCoord, hex.yCoord-1);
     };
 
-    moveUnitNE(/*Hex*/ hex) {
-        return this.getHexById( this.GetHexId(hex.row-1, hex.col+1));
+    moveNE(/*Hex*/ hex) {
+        return this.getHex(hex.xCoord+1, hex.yCoord);
     };
 
-    moveUnitNW(/*Hex*/ hex) {
-        return this.getHexById( this.GetHexId(hex.row-1, hex.col-1));
+    moveNW(/*Hex*/ hex) {
+        return this.getHex(hex.xCoord-1, hex.yCoord-1);
     };
 
-    moveUnitS(/*Hex*/ hex) {
-        return this.getHexById( this.GetHexId(hex.row+2, hex.col));
+    moveS(/*Hex*/ hex) {
+        return this.getHex(hex.xCoord, hex.yCoord+1);
     };
 
-    moveUnitSE(/*Hex*/ hex) {
-        return this.getHexById( this.GetHexId(hex.row+1, hex.col+1));
+    moveSE(/*Hex*/ hex) {
+        return this.getHex(hex.xCoord+1, hex.yCoord+1);
     };
 
-    moveUnitSW(/*Hex*/ hex) {
-        return this.getHexById( this.GetHexId(hex.row+1, hex.col-1));
+    moveSW(/*Hex*/ hex) {
+        return this.getHex(hex.xCoord-1, hex.yCoord);
     };
 
     /**
@@ -195,18 +192,18 @@ class Grid {
 	getHexDistance(/*Hexagon*/ h1, /*Hexagon*/ h2) {
         //a good explanation of this calc can be found here:
         //http://playtechs.blogspot.com/2007/04/hex-grids.html
-        let deltax = h1.PathCoOrdx - h2.PathCoOrdx;
-        let deltay = h1.PathCoOrdy - h2.PathCoOrdy;
+        let deltax = h1.xCoord - h2.xCoord;
+        let deltay = h1.yCoord - h2.yCoord;
         return ((Math.abs(deltax) + Math.abs(deltay) + Math.abs(deltax - deltay)) / 2);
     };
 
 
     getHexById(id) {
-        for(let i in this.Hexes)
+        for(let i in this.hexes)
         {
-            if(this.Hexes[i].Id === id)
+            if(this.hexes[i].Id === id)
             {
-                return this.Hexes[i];
+                return this.hexes[i];
             }
         }
         return null;
@@ -264,31 +261,22 @@ class Line{
 
 class Hexagon{
 
-constructor(id, x, y, row, col) {
+constructor(x, y) {
+
+    //visual coordinates on the canvas
+    this.x = x;
+    this.y = y;
+
     this.points = [];//Polygon Base
-    let x1 = null;
-    let y1 = null;
-    this.row = row;
-    this.col = col;
+    let x1 = (Hexagon.WIDTH - Hexagon.SIDE)/2;
+    let y1 = (Hexagon.HEIGHT / 2);
 
-
-
-    x1 = (Hexagon.WIDTH - Hexagon.SIDE)/2;
-    y1 = (Hexagon.HEIGHT / 2);
     this.points.push(new Point(x1 + x, y));
     this.points.push(new Point(x1 + Hexagon.SIDE + x, y));
     this.points.push(new Point(Hexagon.WIDTH + x, y1 + y));
     this.points.push(new Point(x1 + Hexagon.SIDE + x, Hexagon.HEIGHT + y));
     this.points.push(new Point(x1 + x, Hexagon.HEIGHT + y));
     this.points.push(new Point(x, y1 + y));
-
-
-    this.Id = id;
-
-    this.x = x;
-    this.y = y;
-    this.x1 = x1;
-    this.y1 = y1;
 
     this.TopLeftPoint = new Point(this.x, this.y);
     this.BottomRightPoint = new Point(this.x + Hexagon.WIDTH, this.y + Hexagon.HEIGHT);
@@ -298,7 +286,11 @@ constructor(id, x, y, row, col) {
 
     this.selected = false;
     this.content = null;
-    this.movable=false;
+    this.movable = false;
+    this.xCoord =null;
+    this.yCoord =null;
+
+
 };
 
 
@@ -365,6 +357,33 @@ constructor(id, x, y, row, col) {
         let colorFill = 'rgba('+RF+',' +GF+',' +BF+',' +AF +')';
 
         this.drawBlank(ctx, colorStroke, lineWidth, colorFill);
+
+
+        /*if(this.Id)
+	{
+		//draw text for debugging
+		ctx.fillStyle = "white"
+		ctx.font = "bolder 8pt Trebuchet MS,Tahoma,Verdana,Arial,sans-serif";
+		ctx.textAlign = "center";
+		ctx.textBaseline = 'middle';
+		//var textWidth = ctx.measureText(this.Planet.BoundingHex.Id);
+		ctx.fillText(this.Id, this.MidPoint.x, this.MidPoint.y);
+	}*/
+
+	if(this.xCoord !== null && this.yCoord !== null)
+	{
+		//draw co-ordinates for debugging
+		ctx.fillStyle = "white";
+		ctx.font = "bolder 8pt Trebuchet MS,Tahoma,Verdana,Arial,sans-serif";
+		ctx.textAlign = "center";
+		ctx.textBaseline = 'middle';
+		//var textWidth = ctx.measureText(this.Planet.BoundingHex.Id);
+		ctx.fillText("("+this.xCoord+","+this.yCoord+")", this.MidPoint.x, this.MidPoint.y + 10);
+        let sameHex = //TODO something wrong with Grid.getHex.. debug it visually?
+		ctx.fillText("("+this.xCoord+","+this.yCoord+")", this.MidPoint.x, this.MidPoint.y + 10);
+
+    }
+
 
         ctx.stroke();
         ctx.restore();

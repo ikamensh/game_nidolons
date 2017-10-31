@@ -10,14 +10,11 @@ import {BattleView} from './GUI/BattleView.js'
 import {heroParams} from "./units/tomb_ride/Helene"
 import {ghostParams} from "./units/tomb_ride/Ghost"
 import {pirateParams} from "./units/tomb_ride/Pirate"
-import $ from 'jquery';
 
-// export for others scripts to use
-window.$ = $;
 
-function addUnit(params, hexId){
+function addUnit(params, column, row){
     let unit = new Unit(params);
-    game.grid.placeUnit(game.grid.getHexById(hexId), unit);
+    game.grid.placeUnit(game.grid.getHex(column, row), unit);
     return unit;
 }
 
@@ -26,10 +23,10 @@ function init() {
     game.animationPause=5; //let time for images to load
     game.battleView = new BattleView(canvasDraw, canvasGrid, canvasUnits, canvasEffects);
 
-    game.setHero(addUnit(heroParams,"(2,4)"));
-    game.addHostile(addUnit(ghostParams,"(5,3)"));
-    game.addHostile(addUnit(ghostParams,"(3,5)"));
-    game.addHostile(addUnit(pirateParams,"(1,1)"));
+    game.setHero(addUnit(heroParams,2,2));
+    game.addHostile(addUnit(ghostParams,4,4));
+    game.addHostile(addUnit(ghostParams,5,3));
+    game.addHostile(addUnit(pirateParams,0,0));
 
     game.init();
 
@@ -108,32 +105,32 @@ function mapKeycodeToDirection(keyCode, hex){
 
     //q
     if (keyCode === 81) {
-        newHex = game.grid.moveUnitNW(hex);
+        newHex = game.grid.moveNW(hex);
     }
 
     //w
     if (keyCode === 87) {
-        newHex = game.grid.moveUnitN(hex);
+        newHex = game.grid.moveN(hex);
     }
 
     //e
     if (keyCode === 69) {
-        newHex = game.grid.moveUnitNE(hex);
+        newHex = game.grid.moveNE(hex);
     }
 
     //a
     if (keyCode === 65) {
-        newHex = game.grid.moveUnitSW(hex);
+        newHex = game.grid.moveSW(hex);
     }
 
     //s
     if (keyCode === 83) {
-        newHex = game.grid.moveUnitS(hex);
+        newHex = game.grid.moveS(hex);
     }
 
     //d
     if (keyCode === 68) {
-        newHex = game.grid.moveUnitSE(hex);
+        newHex = game.grid.moveSE(hex);
     }
     return newHex;
 }
