@@ -18,9 +18,9 @@ class AtbController{
                 unit.timeTillTurn = (1-unit.atbReadiness)/unit.initiative;
 
                 //should never happen, but ye know..
-                if(unit.atbReadiness>1.1){
-                    alert("dafuck going on in atbCOntroller?! "+unit.name);
-                }
+                // if(unit.atbReadiness>1.1){
+                //     alert("dafuck going on in atbCOntroller?! "+unit.name);
+                // }
             }
 
         }

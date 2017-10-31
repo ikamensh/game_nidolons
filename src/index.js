@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import {getMousePos} from "./utils/Utils"
-import {Grid} from './battle_system/Grid.js'
+import {Grid} from './grid/Grid.js'
 import {Unit} from './battle_system/Character.js'
 import {Game} from './Game.js'
 import {BottomPanel} from './GUI/BottomPanel.js'
@@ -10,6 +10,7 @@ import {BattleView} from './GUI/BattleView.js'
 import {heroParams} from "./units/tomb_ride/Helene"
 import {ghostParams} from "./units/tomb_ride/Ghost"
 import {pirateParams} from "./units/tomb_ride/Pirate"
+import {Wall} from "./grid/Wall"
 
 
 function addUnit(params, column, row){
@@ -24,21 +25,29 @@ function init() {
     game.battleView = new BattleView(canvasDraw, canvasGrid, canvasUnits, canvasEffects);
 
     game.setHero(addUnit(heroParams,2,2));
-    game.addHostile(addUnit(ghostParams,4,4));
+    game.addHostile(addUnit(ghostParams,7,4));
     game.addHostile(addUnit(ghostParams,5,3));
     game.addHostile(addUnit(pirateParams,0,0));
+
+    let hex1 = game.grid.getHex(2,2);
+    let hex2 = game.grid.getHex(2,3);
+
+    let wall = new Wall(hex1, hex2);
+    game.grid.walls.push(wall);
+
 
     game.init();
 
 }
 
+/*let debugInfo = document.getElementById('debugInfo');*/
 function draw() {
 
     game.timestep();
     window.requestAnimationFrame(draw);
-    debugInfo.innerHTML = canvasGrid.getContext('2d').strokeStyle;
+    /*debugInfo.innerHTML = canvasGrid.getContext('2d').strokeStyle;
     debugInfo.innerHTML += '\n';
-    debugInfo.innerHTML += canvasGrid.getContext('2d').lineWidth;
+    debugInfo.innerHTML += canvasGrid.getContext('2d').lineWidth;*/
 
 }
 
@@ -48,7 +57,7 @@ let canvasEffects = document.getElementById('effectsLayer');
 let canvasUnits = document.getElementById('unitsLayer');
 let canvasGrid = document.getElementById('gridLayer');
 
-let debugInfo = document.getElementById('debugInfo');
+
 
 let theGrid = new Grid(960, 500);
 let game = new Game(theGrid);

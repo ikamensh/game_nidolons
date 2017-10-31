@@ -138,6 +138,7 @@ class Game {
         attacker.animation = new DisplacementAnimation( /*Point*/ { x:(recipientHex.x-attackerHex.x)/4, y: (recipientHex.y-attackerHex.y)/4}, 12, false);
 		let dmgDealt = this.processDamage(attacker.dealDamage(), attackerHex, recipient);
         attacker.playSound('attack', Math.min(1, dmgDealt/recipient.HP.maxValue));
+        this.animationPause=15;
 	
 	}
 

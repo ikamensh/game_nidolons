@@ -1,6 +1,8 @@
 
 class AI {
 
+    //TODO mind the walls! (hanging now)
+
     static wonderingFightBack(/*Unit*/ unit, /*Grid*/ grid, /*Unit*/ theHero, /*Array<Unit>*/ allies) {
 
         /*Hex[]*/

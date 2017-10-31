@@ -18,14 +18,20 @@ class BattleView{
     drawGrid(/*Grid*/ grid){
 
         //draw hex field
-
         this.ctxGrid.clearRect(0, 0, 960, 600);
+        for(let wall of grid.walls){
+            this.ctxDraw.clearRect(0, 0, 960, 600);
+            wall.draw(this.ctxDraw);
+            this.ctxGrid.drawImage(this.canvasDraw,0,0);
+        }
+
+
         for(let hex of grid.hexes) {
             this.ctxDraw.clearRect(0, 0, 960, 600);
             hex.draw(this.ctxDraw);
             this.ctxGrid.drawImage(this.canvasDraw,0,0);
-
         }
+
 
     }
 
